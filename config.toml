@@ -1,0 +1,27 @@
+base_url = "https://thoughts.henrygressmann.de"
+build_search_index = true
+compile_sass = true
+generate_feed = true
+
+taxonomies = [
+  {name = "tags"},
+]
+
+[markdown]
+highlight_code = true
+highlight_theme = "boron"
+
+[extra]
+accent_color = "blue"
+background_color = "green"
+
+logo_text = "henry's thoughts"
+
+# Whether to show links to earlier and later posts
+# on each post page (defaults to true).
+enable_post_view_navigation = true
+
+# The text shown at the bottom of a post,
+# before earlier/later post links.
+# Defaults to "Thanks for reading! Read other posts?"
+post_view_navigation_prompt = "Thanks for reading! Read other posts?"

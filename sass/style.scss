@@ -1,0 +1,22 @@
+:root {
+  --accent: #2afff1;
+  --accent-alpha-70: #2afff1ab;
+  --accent-alpha-20: #2afff136;
+
+  --background: #111318;
+  --color: white;
+  --border-color: rgba(255, 255, 255, 0.1);
+
+  --font-family-mono: "Space Mono", monospace;
+  --font-family-text: "Source Sans Pro", Georgia, Cambria, "Times New Roman",
+    Times, serif;
+}
+
+@import "buttons";
+
+@import "header";
+@import "logo";
+@import "main";
+@import "post";
+@import "pagination";
+@import "footer";
