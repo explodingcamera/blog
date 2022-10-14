@@ -5,6 +5,9 @@ on:
     branches:
       - main
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Publish site
@@ -12,7 +15,13 @@ jobs:
     steps:
       - name: Checkout main
         uses: actions/checkout@v3.0.0
+
       - name: Build and deploy
         uses: shalzz/zola-deploy-action@v0.16.1
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          BUILD_ONLY: true
+
+      - name: Deploy 🚀
+        uses: JamesIves/github-pages-deploy-action@v4
+        with:
+          folder: public # The folder the action should deploy.
