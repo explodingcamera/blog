@@ -1,11 +1,12 @@
 base_url = "https://thoughts.henrygressmann.de"
 build_search_index = true
 compile_sass = true
+description = "a blog about software development, technology and other stuff"
 generate_feed = true
-
 taxonomies = [
   {name = "tags"},
 ]
+title = "henry's thoughts"
 
 [markdown]
 highlight_code = true

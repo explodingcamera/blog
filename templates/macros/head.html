@@ -1,8 +1,12 @@
 {% macro head(config) %}
 <meta http-equiv="content-type" content="text/html; charset=utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <meta name="robots" content="noodp" />
+<meta name="description" content="{{ config.description }}">
 <link rel="stylesheet" href="{{ get_url(path='style.css', trailing_slash=false) | safe }}">
 <link rel="preconnect" href="https://fonts.bunny.net">
 <link href="https://fonts.bunny.net/css?family=source-sans-pro:400,400i,600|space-mono:400,700,700i" rel="stylesheet" />
+<meta http-equiv="Content-Security-Policy"
+  content="default-src 'self'; script-src 'self' 'unsafe-eval' https://cdn.skypack.dev http://127.0.0.1:1111; style-src http://127.0.0.1:1111 https://fonts.bunny.net 'self' data: 'unsafe-inline'; font-src https://fonts.bunny.net; connect-src *">
+
 {% endmacro head %}
