@@ -11,6 +11,22 @@
   margin: 20px 20px;
   padding: 20px 0;
 
+  .interview {
+    p {
+      margin: 0;
+      margin-bottom: 0.5rem;
+    }
+    blockquote {
+      background: linear-gradient(12deg, #6d07ff, #15b154e3);
+      margin: 0;
+      margin-bottom: 2rem;
+      p {
+        margin: 0;
+        padding: 0 0.5rem;
+      }
+    }
+  }
+
   @media (max-width: $tablet-max-width) {
     max-width: 660px;
   }

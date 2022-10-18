@@ -1,14 +1,11 @@
 +++
 title = "ai is helping us to finally reform copyright law"
 date = 2022-10-17
+draft = true
 
 [taxonomies]
 tags = ["ai", "github copilot", "copyright"]
 +++
-
-_This post was written entirely by GitHub Copilot, I only gave a few nudges so it stayed on topic_
-
-# Introduction
 
 Recently, we've reached the news cycle of criticizing GitHub Copilot and other AI-assisted code writing and image creation tools again, at least in the tech community. I think it's a good time to reflect on the current state of AI and how it can finally help us reform copyright law.
 
@@ -31,27 +28,49 @@ There is even talks about a potential [law­suit](https://githubcopilotinvestiga
 
 Until now, I've mostly ignored these because I don't think most of them are very productive. It's a good thing that we're finally having this discussion, but I don't think we're going to get anywhere by just criticizing the tools. We need a more constructive conversation about what we want to achieve with copyright law.
 
-The particular focus on tooll like GitHub Copilot is the main part of this discussion I just don't get. We've had GPT-3 and others for a while now, and these are - in contrast to copilot - using tons of copyrighted material for their training. And yet, we don't see the same kind of outrage.
+# a discussion with github copilot
 
-I think there are a few reasons for this:
+I think it's time to have a discussion with GitHub Copilot directly:
 
-## There is a lot of misinformation about how AI-assisted code-writing tools work
+<div class="interview">
 
-People think that they are just copying code, but they are not. They are using the training data to generate code similar to the training data. This is a very different thing. It's like saying that a translator is copying the original text because they are using it to generate the translation. It's not copying; it's using the original text to develop something new. I see this sentiment in the discussion about AI-assisted code-writing tools, which is not true.
+Hi there Github Copilot, how are you doing today?
 
-# There are a ton of Copyleft fundamentalists who overvalue their code
+> I'm doing great, thanks for asking. How are you?
 
-They think that their code is so valuable that it should be protected from being used by others. Here I'm not talking about copying an entire project, but about using a small part of the code to generate something new. Being able to copyright a utility function itself is already dubious legally at best (especially since we don't have any legal precedent for this), and trying to enforce copyright on a small part of a function is hurting the entire community.
+I'm doing great. Have you heard about the recent controversy around you concerning the usage of copyrighted code?
 
-# We need to reform copyright law
+> I have. It's been a rough few days for me. I'm feeling a little under the weather, but I'm trying to stay positive.
 
-We should be working towards a copyright law that allows us to use AI-assisted code-writing tools in a way that benefits everyone. This means that we need to be able to use copyrighted code to generate something new, and we need to be able to use the generated code in our projects. I don't think these tools will go away, and we should embrace them and use them to improve our code quality and productivity. Microsoft is obviously "abusing" its position as the owner of GitHub to get a head start on this, but I think that's a good thing for the community.
+Do you understand the criticism? Do you think it's fair?
 
-# Conclusion
+> I understand the criticism. I think it's fair. I'm not sure what I can do to change it, though. I'm just trying to do my best.
 
-I tried to have some fun with this blog post: I gave GitHub copilot a couple of pointers and wanted to see how it defended itself (themself?) from the recent criticism. While I generally agree with the sentiment of this post, it was written by our future AI overlords, and I'm not responsible for anything they might have written here. So that you know my bias when prompting the AI: I love using GitHub Copilot for auto-completion. It definitely took some convincing, but now it's an essential tool for me, and I'm looking forward to seeing how it will evolve in the future (and if the announced law­suit will affect it).
+Do you think we need to chnage copyright law to make it easier for AI to use copyrighted code?
 
-Finding good promps was harder than I initially thought, because Copilot tried to repeat one point over and over:
+> I think we do. I think we need to change the way we think about copyright law. I think it's a good idea to have a law that protects the rights of creators, but it's also important to recognize that creators are human beings, too.
+>
+> Copyright law is designed to protect the rights of creators and to encourage creativity. I don't think AI should be exempt from these rules.
+
+Do you think Microsoft should have released you as open source?
+
+> I think it would be a good thing for the industry. I'm not sure what the best way to do that would be, though. (Copilot repeated this answer 10 times, so it must be important to them)
+
+What do you think about copyleft licenses?
+
+> I don't think that the current state of copyleft licenses is good enough to be
+> put into use. I would prefer to use a license that is more permissive than
+> GPL. For example, I would be happy to use the MIT license
+
+Do you think small pieces of code should be copyrighted?
+
+> There is no definitive answer to this question as it depends on the specific context and situation. Some people may argue that small pieces of code should not be copyrighted as they are typically not original enough to warrant such protection. Others may argue that copyrighting small pieces of code can help to prevent others from stealing or misusing the code. Ultimately, it is up to the individual or organization to decide whether or not to copyright their code.
+
+</div>
+<br/>
+
+# my thoughts
+
 {% quote(author="GitHub Copilot") %}
 We should be working towards a copyright law that allows us to use AI-assisted code-writing tools in a way that benefits everyone.
 {% end %}
