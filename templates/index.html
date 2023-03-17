@@ -50,9 +50,11 @@
         </header>
         {% endblock header %}
 
+
         <div class="content">
             {% block content %}
             <div class="post">
+                code snippets, random projects, and other stuff
                 {% set section = get_section(path="_index.md") %}
                 {{ post_macros::list_posts(pages=section.pages) }}
             </div>

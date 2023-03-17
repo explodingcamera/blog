@@ -1,4 +1,4 @@
-base_url = "https://thoughts.henrygressmann.de"
+base_url = "https://blog.henrygressmann.de"
 build_search_index = true
 compile_sass = true
 description = "a blog about software development, technology and other stuff"
@@ -6,7 +6,7 @@ generate_feed = true
 taxonomies = [
   {name = "tags"},
 ]
-title = "henry's thoughts"
+title = "henry's blog"
 
 [markdown]
 highlight_code = true
@@ -16,7 +16,7 @@ highlight_theme = "boron"
 accent_color = "blue"
 background_color = "green"
 
-logo_text = "henry's thoughts"
+logo_text = "henry's blog"
 
 # Whether to show links to earlier and later posts
 # on each post page (defaults to true).

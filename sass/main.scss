@@ -43,11 +43,13 @@ h6 {
 h1 {
   font-size: 1.9rem;
   margin-top: 3rem;
+  color: var(--accent);
   background: linear-gradient(93deg, #00ffe8 20%, #effbff 70%);
   -webkit-background-clip: text;
   background-clip: text;
   -webkit-text-fill-color: transparent;
   -webkit-box-decoration-break: clone;
+  box-decoration-break: clone;
 }
 
 h2 {
@@ -126,8 +128,7 @@ figure {
     font-size: 14px;
     padding: 5px 10px;
     margin-top: 5px;
-    background: var(--accent);
-    color: var(--background);
+    color: white;
 
     &.left {
       text-align: left;
@@ -185,6 +186,7 @@ blockquote {
   }
 
   background: #373737;
+  background: linear-gradient(45deg, #3a3a3a, #2e2e2e);
   &.twitter {
     background: linear-gradient(45deg, #106da7, #053b5d);
     color: #fff;
