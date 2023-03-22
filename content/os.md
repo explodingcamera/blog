@@ -5,6 +5,7 @@ draft = true
 
 [taxonomies]
 tags = ["qoi", "koi", "image"]
+series = ["os-dev"]
 +++
 
 A couple of years ago, I started learning a bit about low-level dev things through [nand2tetris](https://www.nand2tetris.org/) but recently I've gotten more interested in kernel and OS development (mostly because I've been reading a lot of linux kernel code to understand how it works). I thought it would be a good idea to document my journey through this process since many of the resources I've found are either outdated or not very accessible. These posts will be kept as short as possible, and mostly serve as a reference for myself, but hopefully they will be useful to others as well. This first entry will be mainly about setting up the environment and getting the first kernel to boot. Most of the information here is taken from different guides and tutorials, and I will try to link to them as much as possible. The code for this project can be found [here](https://github.com/explodingcamera/pogos).
