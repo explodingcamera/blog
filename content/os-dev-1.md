@@ -35,12 +35,13 @@ rustup toolchain install nightly
 # add the rust-src component (needed for building the standard library)
 rustup component add rust-src --toolchain nightly
 # add the risc-v target
-# - gc stands for generic (IMAFD extensions) and C (compressed instructions extension)
+# - gc stands for the generic (IMAFD extensions) and compressed extensions
 # - elf is the executable format we'll be using
 rustup target add riscv64gc-unknown-none-elf --toolchain nightly
 
 cargo init --bin --name os
-cargo add sbi # simple & safe api for interacting with the supervisor binary interface (SBI)
+# simple & safe api for interacting with the supervisor binary interface (SBI)
+cargo add sbi
 ```
 
 Next, we'll create some config files to tell cargo how to build our project.
@@ -62,10 +63,12 @@ components = ["rust-src"]
 target = "riscv64gc-unknown-none-elf"
 
 [target.riscv64gc-unknown-none-elf]
-# start our executable with qemu when running `cargo run`. This will be explained in more detail later
+# start our executable with qemu when running `cargo run`.
+# This will be explained in more detail later
 runner = "qemu-system-riscv64 -m 2G -machine virt -nographic -bios ../bootloader/rustsbi-qemu.bin -serial mon:stdio -kernel"
 
-# linker flags with a custom linker script, we'll be using the one provided by `riscv-rt` later instead
+# linker flags with a custom linker script, we'll be using
+# the one provided by `riscv-rt` later instead
 rustflags = [
   "-Clink-arg=-T./os/src/linker.ld",
   "-Cforce-frame-pointers=yes",
@@ -94,7 +97,9 @@ The first thing we need to do is to setup our linker script. The linker is a pro
 
 OUTPUT_ARCH(riscv) #
 ENTRY(_start)
-/* The base address of the program. RAM starts at 0x80000000 and SBI takes the first 2MB. */
+
+/* The base address of the program. RAM starts at 0x80000000 in QEMU
+   and SBI takes the first 2MB. */
 BASE_ADDRESS = 0x80200000;
 
 SECTIONS
@@ -203,7 +208,8 @@ We can add it to our project by adding the following to our `Cargo.toml` file:
 ```toml
 
 [dependencies]
-riscv-rt = {version = "0.11", features = ["s-mode"]} # we'll be running our kernel in S-mode whoch is needed for SBI
+# we'll be running our kernel in S-mode which is needed for SBI
+riscv-rt = {version = "0.11", features = ["s-mode"]}
 ```
 
 # Resources
