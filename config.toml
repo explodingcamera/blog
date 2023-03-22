@@ -10,8 +10,9 @@ taxonomies = [
 title = "henry's blog"
 
 [markdown]
+extra_syntaxes_and_themes = ["highlight_themes", "syntaxes"]
 highlight_code = true
-highlight_theme = "boron"
+highlight_theme = "dracula"
 
 [extra]
 accent_color = "blue"

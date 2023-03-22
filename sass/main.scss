@@ -34,8 +34,6 @@ h3,
 h4,
 h5,
 h6 {
-  display: flex;
-  align-items: center;
   font-weight: bold;
   line-height: 1.3;
   margin-bottom: 0.5rem;
@@ -43,7 +41,7 @@ h6 {
 
 h1 {
   font-size: 1.5rem;
-  margin-top: 1rem;
+  margin-top: 2rem;
   color: var(--color);
   // background: linear-gradient(93deg, #00ffe8 20%, #effbff 70%);
   // -webkit-background-clip: text;
@@ -56,7 +54,6 @@ h1 {
 h2 {
   font-size: 1.1rem;
   font-weight: 400;
-  margin-bottom: -0.5rem;
 }
 
 h3 {
@@ -160,15 +157,25 @@ code {
   padding: 1px 6px;
   margin: 0 2px;
   font-size: 0.95rem;
+  padding: 0.2em 0.4em;
+  border-radius: 3px;
+}
+
+// code is the only element that can be a child of a <p>
+code.filename {
+  font-size: 0.85rem;
+  margin: 0.4rem;
+  position: absolute;
 }
 
 pre {
   font-family: Hack, DejaVu Sans Mono, Monaco, Consolas, Ubuntu Mono, monospace;
-  padding: 20px;
+  padding: 0.8rem 0.7rem;
   font-size: 0.95rem;
   overflow: auto;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  margin-bottom: 2rem;
+  margin-top: 0;
+  border-radius: 6px;
 
   @media (max-width: $phone-max-width) {
     white-space: pre-wrap;
@@ -194,8 +201,7 @@ blockquote {
     padding-right: 0;
   }
 
-  background: #373737;
-  background: linear-gradient(45deg, #3a3a3a, #2e2e2e);
+  background: #282a36;
   &.twitter {
     background: linear-gradient(45deg, #106da7, #053b5d);
     color: #fff;

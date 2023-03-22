@@ -4,7 +4,7 @@ date = 2023-03-14
 draft = false
 
 [taxonomies]
-tags = ["s3"]
+tags = ["s3", "typescript", "serverless"]
 +++
 
 Instead of reinventing the wheel for every project and spending time understanding the intricacies of multipart uploads, you can upload files directly to S3/R2/whatever using a pre-signed URL.
