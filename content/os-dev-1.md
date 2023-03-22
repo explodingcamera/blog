@@ -65,12 +65,14 @@ target = "riscv64gc-unknown-none-elf"
 [target.riscv64gc-unknown-none-elf]
 # start our executable with qemu when running `cargo run`.
 # This will be explained in more detail later
-runner = "qemu-system-riscv64 -m 2G -machine virt -nographic -bios ../bootloader/rustsbi-qemu.bin -serial mon:stdio -kernel"
+# `-bios ./bootloader/rustsbi-qemu.bin` can be omitted if you want to use OpenSBI instead
+# which is bundled with qemu, but I prefer RustSBI
+runner = "qemu-system-riscv64 -m 2G -machine virt -nographic -bios ./bootloader/rustsbi-qemu.bin -serial mon:stdio -kernel"
 
 # linker flags with a custom linker script, we'll be using
 # the one provided by `riscv-rt` later instead
 rustflags = [
-  "-Clink-arg=-T./os/src/linker.ld",
+  "-Clink-arg=-T./src/linker.ld",
   "-Cforce-frame-pointers=yes",
 ]
 
@@ -78,6 +80,8 @@ rustflags = [
 # build the standard library ourselves
 build-std = ["core", "alloc"]
 ```
+
+If you want to use RustSBI too, you can download the binary [here](https://github.com/rustsbi/rustsbi-qemu/releases/tag/v0.1.1).
 
 # Booting on RISC-V
 
@@ -199,7 +203,7 @@ boot_stack_top:
 
 # Using RISCV-RT
 
-RISCV-RT cool crate that will automatically setup our runtime for us so we don't have to do any of the stuff we did in the previous section.
+RISCV-RT ia a crate that will automatically setup our runtime for us so we don't have to do any of the stuff we did in the previous section.
 Additionally, it also provides us with a trap handler which will be very useful for handling interrupts and exceptions later on.
 We can add it to our project by adding the following to our `Cargo.toml` file:
 
