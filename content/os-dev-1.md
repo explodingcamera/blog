@@ -1,5 +1,6 @@
 +++
 title = "os-dev part 1: getting started"
+slug = "osdev-1-getting-started"
 date = 2023-03-21
 wip = true
 
@@ -12,7 +13,7 @@ series = ["os-dev"]
 
 ## ! **This post is still a work in progress** !
 
-A couple of years ago, I started learning a bit about low-level dev things through [nand2tetris](https://www.nand2tetris.org/) but recently I've gotten more interested in kernel and OS development (mostly because I've been reading a lot of linux kernel code to understand how it works). I thought it would be a good idea to document my journey through this process since many of the resources I've found are either outdated or not very accessible. These posts will be kept as short as possible, and mostly serve as a reference for myself, but hopefully they will be useful to others as well. This first entry will be mainly about setting up the environment and getting the first kernel to boot. Most of the information here is taken from different guides and tutorials, and I will try to link to them as much as possible. The code for this project can be found [here](https://github.com/explodingcamera/pogos).
+A couple of years ago, I started learning a bit about low-level dev things through [nand2tetris](https://www.nand2tetris.org/) but recently I've gotten more interested in kernel and OS development (mostly because I've been reading a lot of linux kernel code to understand how it works). I thought it would be a good idea to document my journey through this process since many of the resources I've found are either outdated or not very accessible. These posts will be kept as short as possible, and mostly serve as a reference for myself, but hopefully they will be useful to others as well. This first entry will be mainly about setting up the environment and getting the first kernel to boot. Most of the information here is taken from different guides and tutorials, and I will try to link to them as much as possible. I recommend also reading Phil Oppermann's [blog](https://os.phil-opp.com/) which is a bit less opinionated and goes a bit more into detail.
 
 X86 is probably the most popular architecture for OS development, but comes with a lot of baggage and - in my opinion - is inevitably going to be replaced by something else in the future due to the high complexity of the architecture and historical baggage. [risc-v](https://riscv.org/) has been getting a lot of buzz on hackernews & co lately, so I decided to give it a try.
 For now, I'll be using QEMU to emulate a CPU, and (hopefully) on a real board later on (my MangoPi MQ-Pro recently arrived and I'm excited to give it a try). All of the code will be written in rust with the goal of using as little unsafe code as possible.
