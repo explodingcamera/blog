@@ -8,7 +8,7 @@ tags = ["s3"]
 +++
 
 Instead of reinventing the wheel for every project and spending time understanding the intricacies of multipart uploads, you can upload files directly to S3/R2/whatever using a pre-signed URL.
-You don't even need the full AWS SDK, you can use the [aws4fetch](https://github.com/mhart/aws4fetch).
+You don't even need the full AWS SDK, you can use something more minimal like [aws4fetch](https://github.com/mhart/aws4fetch).
 
 Especially if you are using serverless, this is a great way to save time and money.
 
