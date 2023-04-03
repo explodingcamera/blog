@@ -258,6 +258,10 @@ td {
   padding: 10px;
 }
 
+td > * {
+  margin-bottom: 0;
+}
+
 th {
   color: var(--accent);
 }
