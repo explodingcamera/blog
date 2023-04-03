@@ -2,7 +2,7 @@
 title = "os-dev part 1: getting started"
 slug = "osdev-1-getting-started"
 date = 2023-03-21
-wip = true
+draft = true
 
 [taxonomies]
 tags = ["os-dev", "rust"]

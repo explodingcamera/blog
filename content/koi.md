@@ -6,7 +6,8 @@ date = 2023-04-02
 tags = ["koi", "image"]
 +++
 
-I've been working on a new image format called [koi](https://github.com/explodingcamera/koi) and I wanted to share some details.
+I've been working on a new image format called [koi](https://github.com/explodingcamera/koi) - **the kinda okay image format**  
+and I wanted to share some details.
 
 It's a lossless image format based on ideas from [qoi](https://phoboslab.org/log/2021/11/qoi-fast-lossless-image-compression) and [qoir](https://nigeltao.github.io/blog/2022/qoir.html) that is designed to use a small amount of memory and be fast to decode. I have exactly zero experience with image formats, so this is a learning experience for me. In the end, I managed to get it to a point where it's usable and competitive with PNG in certain situations.
 
@@ -88,7 +89,7 @@ The last frame is followed by 8 special bytes `\x00\x00\x00\x00\xF0\x9F\x99\x82`
 
 # Performance
 
-To compare the performance of koi to other image formats, I wrote a simple benchmark which is available [here](https://github.com/explodingcamera/koi-rs/tree/main/koi-bench). The benchmark decodes a series of images and measures the time it takes to decode them. The images are taken from the Qoi Benchmark Suite, which is a collection of images that are used to test the performance of qoi. The benchmark is run on a Ryzen 7 5800X with 32GB of RAM and images are decoded directly from and into memory.
+To compare the performance of koi to other image formats, I wrote a simple benchmark which is available [here](https://github.com/explodingcamera/koi-rs/tree/main/koi-bench). The benchmark decodes a series of images and measures the time it takes to decode them. The images are taken from the [Qoi Benchmark Suite](https://qoiformat.org/benchmark/), which is a collection of images that are used to test the performance of qoi. The benchmark is run on a Ryzen 7 5800X with 32GB of RAM and images are decoded directly from and into memory.
 
 ```
 ┌─────────────────────────────────────┐
@@ -102,7 +103,7 @@ To compare the performance of koi to other image formats, I wrote a simple bench
 └─────────┴─────────┴─────────┴───────┘
 ```
 
-When looking at the overall benchmark results, Koi actually sits somewhere in the middle between the different png profiles. Koi actually outperforms the default png profile in almost every category, except
+When looking at the overall benchmark results, Koi sits somewhere in the middle between the different png profiles. Koi actually outperforms the default png profile in almost every category, except
 for photos with a lot of detail:
 
 ```
@@ -148,7 +149,7 @@ And for screenshots, Koi actually outperforms both png profiles in every categor
 
 # Future Work
 
-Encoding and Desoding still have a ton of room for optimization, especially in the encoding side. Also, the current implementation of the decoder can produce some artifacts when decoding images with a lot of detail due to collisions in the hash table. I was not able to reliably test memory usage, but it should be on par or better than most png encoders. In the future, I'd like to also add some more image formats to the benchmark, like WebP and Qoi.
+Encoding and Decoding still have a ton of room for optimization, especially in the encoding side. Also, the current implementation of the decoder can produce some artifacts when decoding images with a lot of detail due to collisions in the hash table. I was not able to reliably test memory usage, but it should be on par or better than most png encoders. In the future, I'd like to also add some more image formats to the benchmark, like WebP and Qoi.
 
 # Conclusion
 
