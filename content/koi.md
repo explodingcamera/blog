@@ -80,7 +80,7 @@ The following chunk types are added additionally:
 │         Byte[0]         │
 │  7  6  5  4  3  2  1  0 │
 │───────┼─────────────────│
-|  1  1 |      diff       |
+│  1  1 │      diff       │
 └───────┴─────────────────┘</code></pre></td>
     <td><p>
       The difference between the current pixel's alpha value and the previous pixel's alpha value. Stored as unsigned integers with a bias of 2. Lengths above 59 are illegal since they are used by other chunk types.

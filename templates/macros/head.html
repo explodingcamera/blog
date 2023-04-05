@@ -6,6 +6,6 @@
 <link rel="stylesheet" href="{{ get_url(path='style.css', cachebust=true, trailing_slash=false) | safe }}">
 <link rel="preconnect" href="https://fonts.bunny.net">
 <meta http-equiv="Content-Security-Policy"
-  content="default-src 'self'; script-src 'self' 'unsafe-eval' https://cdn.skypack.dev http://127.0.0.1:1111; style-src http://127.0.0.1:1111 'self' data: 'unsafe-inline'; font-src https://fonts.bunny.net; connect-src *">
+  content="default-src 'self'; script-src 'self' 'unsafe-eval' https://cdn.skypack.dev http://127.0.0.1:1111; style-src http://127.0.0.1:1111 'self' data: 'unsafe-inline'; font-src 'self' https://fonts.bunny.net; connect-src *">
 
 {% endmacro head %}
