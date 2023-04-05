@@ -177,10 +177,10 @@ pre {
   margin-top: 0;
   border-radius: 6px;
 
-  @media (max-width: $phone-max-width) {
-    white-space: pre-wrap;
-    word-wrap: break-word;
-  }
+  // @media (max-width: $phone-max-width) {
+  //   white-space: pre-wrap;
+  //   word-wrap: break-word;
+  // }
 
   code {
     padding: 0;
@@ -245,7 +245,7 @@ blockquote {
 }
 
 table {
-  table-layout: fixed;
+  table-layout: auto;
   border-collapse: collapse;
   width: 100%;
   margin: 40px 0;

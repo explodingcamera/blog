@@ -17,7 +17,7 @@ ul.toc {
 .post {
   width: 100%;
   text-align: left;
-  margin: 20px 20px;
+  // margin: 20px 20px;
   padding: 20px 0;
 
   .interview {
@@ -36,9 +36,9 @@ ul.toc {
     }
   }
 
-  @media (max-width: $tablet-max-width) {
-    max-width: 660px;
-  }
+  // @media (max-width: $tablet-max-width) {
+  //   max-width: 660px;
+  // }
 
   &:not(:last-of-type) {
     border-bottom: 1px solid var(--border-color);

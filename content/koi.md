@@ -30,9 +30,33 @@ All chunk types of [QOI](https://phoboslab.org/log/2021/11/qoi-fast-lossless-ima
 
 The following chunk types are added additionally:
 
-<table>
+<style>
+  .chunk-table {
+    /* overflow: auto;
+    display: flex;
+    padding: 0;
+    /* border: none; */ */
+  }
+  .chunk-table tbody {
+    display: flex;
+    flex-direction: column;
+  }
+  .chunk-table tr {
+    display: flex;
+    flex-wrap: wrap;
+  }
+  .chunk-table td:first-child {
+    flex: 1;
+  }
+  .chunk-table td:last-child {
+    flex: 999;
+    min-width: 15rem;
+  }
+</style>
+
+<table class="chunk-table">
   <tr>
-    <td style="width: min-content;">
+    <td>
       <pre><code>┌─ OP_INDEX ──────────────┐
 │         Byte[0]         │
 │  7  6  5  4  3  2  1  0 │
@@ -46,7 +70,7 @@ The following chunk types are added additionally:
     </p></td>
   </tr>
   <tr>
-    <td style="width: min-content;">
+    <td>
       <pre><code>┌─ OP_DIFF_ALPHA ─────────┐
 │         Byte[0]         │
 │  7  6  5  4  3  2  1  0 │
@@ -58,7 +82,7 @@ The following chunk types are added additionally:
     </p></td>
   </tr>
   <tr>
-    <td style="width: min-content;">
+    <td>
       <pre><code>┌─ OP_GRAY ───────────────┐
 │         Byte[0]         │
 │  7  6  5  4  3  2  1  0 │
@@ -70,7 +94,7 @@ The following chunk types are added additionally:
     </p></td>
   </tr>
   <tr>
-    <td style="width: min-content;">
+    <td>
       <pre><code>┌─ OP_GRAY_ALPHA ─────────┐
 │         Byte[0]         │
 │  7  6  5  4  3  2  1  0 │
