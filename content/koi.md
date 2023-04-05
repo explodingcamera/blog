@@ -37,6 +37,11 @@ The following chunk types are added additionally:
     padding: 0;
     /* border: none; */ */
   }
+  .chunk-table pre {
+    line-height: 1.2;
+    display: flex;
+    justify-content: center;
+  }
   .chunk-table tbody {
     display: flex;
     flex-direction: column;
