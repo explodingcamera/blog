@@ -1,7 +1,7 @@
 +++
 title = "os-dev part 1: getting started"
-slug = "osdev-1-getting-started"
-date = 2023-03-21
+slug = "osdev-1"
+date = 2023-05-07
 draft = true
 
 [taxonomies]
@@ -9,26 +9,28 @@ tags = ["os-dev", "rust"]
 series = ["os-dev"]
 +++
 
-> This is a series of posts about my journey through OS development in rust. You can find the code for this project [here](https://github.com/explodingcamera/pogos) and all of the posts in this series [here](/series/os-dev/).
+> This is a series of posts about my journey creating a kernel in rust. You can find the code for this project [here](https://github.com/explodingcamera/pogos) and all of the posts in this series [here](/series/os-dev/).
 
-## ! **This post is still a work in progress** !
-
-A couple of years ago, I started learning a bit about low-level dev things through [nand2tetris](https://www.nand2tetris.org/) but recently I've gotten more interested in kernel and OS development (mostly because I've been reading a lot of linux kernel code to understand how it works). I thought it would be a good idea to document my journey through this process since many of the resources I've found are either outdated or not very accessible. These posts will be kept as short as possible, and mostly serve as a reference for myself, but hopefully they will be useful to others as well. This first entry will be mainly about setting up the environment and getting the first kernel to boot. Most of the information here is taken from different guides and tutorials, and I will try to link to them as much as possible. I recommend also reading Phil Oppermann's [blog](https://os.phil-opp.com/) which is a bit less opinionated and goes a bit more into detail.
-
-X86 is probably the most popular architecture for OS development, but comes with a lot of baggage and - in my opinion - is inevitably going to be replaced by something else in the future due to the high complexity of the architecture. [risc-v](https://riscv.org/) has been getting a lot of buzz on hackernews & co lately, so I decided to give it a try.
-For now, I'll be using QEMU to emulate a CPU, and (hopefully) on a real board later on (my MangoPi MQ-Pro recently arrived and I'm excited to give it a try). All of the code will be written in rust with the goal of using as little unsafe code as possible.
+A couple of years ago, I started learning a bit about low-level development through [nand2tetris](https://www.nand2tetris.org/) but recently I've gotten more interested in kernel and OS development through reading a lot ow lwn.net and because of the inclusion of rust support for writing linux kernel modules.
+I've found that a lot of blogs and guides on kernels are either outdated or not very accessible, so this will be a different (and hopefully more fun) approach, fully utilizing the rust ecosystem to get up and running quickly. To dive in deeper, I also reading Phil Oppermann's amazing [blog](https://os.phil-opp.com/) on the subject. To get the most out of this series, prerequisite knowledge of rust or a sililar programming language is required. All commands throughout the series will also be expecting a linux terminal and might need to be slightly adjusted for osX or Windows.
 
 {{toc}}
 
+# RISC-V
+
+X86 is currently the dominant CPU architecture, and only has recently lot a bit of marketshare to emerging ARM CPUs like the Apple M1 or AWS Graviton. For this series, however, we'll be writing the kernel for RISC-V. RISC-V is, as the name tells us, a Reduced Instruction Set Computer, which was released in 2015 under royalty-free open-source licenses. By focusing on small and modular instruction extensions and being standardazed so recently, it avoids the large historycal baggage and weird design decisions plaguing x86 (check out [this](https://mjg59.dreamwidth.org/66109.html) article to see the horrendous boot process in action).
+
+I'll be using QEMU to emulate a CPU, and (hopefully) on a real board later on (my MangoPi MQ-Pro recently arrived and I'm excited to give it a try).
+
 # Setting up the environment
 
-Setting up low-level risc-v dev in rust is pretty straightforward, and can be done in a few steps:
-
-First of, I'll be using the nightly version of rust, so we can build parts of the standard library ourselves and use some unstable features which can be useful for OS development.
+Recent versions of rust have (mostly) made setting up bare metal development a breeze. First of, I'll be using the nightly version of rust, so we can build parts of the standard library ourselves and use some unstable features.
 
 {{ file(name = "terminal")}}
 
 ```bash
+# install qemu, this will be different depending on your os
+sudo pacman -S qemu-system-riscv64
 
 # install rust nightly
 rustup toolchain install nightly
@@ -40,8 +42,6 @@ rustup component add rust-src --toolchain nightly
 rustup target add riscv64gc-unknown-none-elf --toolchain nightly
 
 cargo init --bin --name os
-# simple & safe api for interacting with the supervisor binary interface (SBI)
-cargo add sbi
 ```
 
 Next, we'll create some config files to tell cargo how to build our project.
@@ -65,147 +65,33 @@ target = "riscv64gc-unknown-none-elf"
 [target.riscv64gc-unknown-none-elf]
 # start our executable with qemu when running `cargo run`.
 # This will be explained in more detail later
-# `-bios ./bootloader/rustsbi-qemu.bin` can be omitted if you want to use OpenSBI instead
-# which is bundled with qemu, but I prefer RustSBI
-runner = "qemu-system-riscv64 -m 2G -machine virt -nographic -bios ./bootloader/rustsbi-qemu.bin -serial mon:stdio -kernel"
+# (qemu bundles opensbi, so we don't need to delare a bootloader)
+runner = "qemu-system-riscv64 -m 2G -machine virt -nographic -serial mon:stdio -kernel"
 
-# linker flags with a custom linker script, we'll be using
-# the one provided by `riscv-rt` later instead
+# linker flags
 rustflags = [
-  "-Clink-arg=-T./src/linker.ld",
-  "-Cforce-frame-pointers=yes",
+  "-Clink-arg=-Tmemory.x",
+  "-Clink-arg=-Tlink.x",
 ]
 
+# build the standard library ourselves, required to use the alloc crate
 [unstable]
-# build the standard library ourselves
 build-std = ["core", "alloc"]
 ```
 
-If you want to use RustSBI too, you can download the binary [here](https://github.com/rustsbi/rustsbi-qemu/releases/tag/v0.1.1).
-
 # Booting on RISC-V
 
-The whole bootloader landscape if pretty in flux for risc-v right now, however it is not too complicated if you follow the right steps. A decent overview can be found [here](https://riscv.org/wp-content/uploads/2019/12/Summit_bootflow.pdf). We'll be using the Supervisor Binary Interface, specifically [RustSBI](https://github.com/rustsbi/rustsbi) to boot our kernel, which is essentially a binary that is loaded by the bootloader and then jumps to the kernel entry point. Theres no real reason to use RustSBI over other SBI implementations, but I've decided to use it to stick to rust as much as possible. When running something like linux, you'll probably want to use something like u-boot on top, but for now we'll just jump straight to the kernel from RustSBI (We're using RustSBI as our _M-mode RUNTIME firmware_ together with [_FW_JUMP_](https://riscv.org/wp-content/uploads/2019/06/13.30-RISCV_OpenSBI_Deep_Dive_v5.pdf#page=16) to jump to the kernel which is super easy with qemu).
+The whole bootloader landscape if pretty in flux for risc-v right now, however it is not too complicated if you follow the right steps. A decent overview can be found [here](https://riscv.org/wp-content/uploads/2019/12/Summit_bootflow.pdf). We'll be using the Supervisor Binary Interface as out bootloader. We're using OpenSBI (Supervisor Binary Interface) as our _M-mode RUNTIME firmware_. The version shipping with qemu uses a Jump Address ([_FW_JUMP_](https://github.com/riscv-software-src/opensbi/blob/master/docs/firmware/fw_jump.md)), in this case `0x80200000`, which is where we'll be putting our kernel.
 
-SBI is kind of like a kernel for our kernel, which gives our us a standard interface to interact with low-level hardware. This runs in M-mode, which is the highest privilege level on risc-v. The kernel will run in S-mode, which is the second highest privilege level. To interact with SBI, we will be using the `ecall` instruction, which is a trap instruction that will cause the CPU to jump to the SBI handler. The SBI handler will then handle the trap and call the appropriate function in RustSBI and it will then return to the kernel and continue execution. To call the SBI, we will be using the [sbi](https://crates.io/crates/sbi) crate, which provides a safe interface for ecalls. SBI can also be used to print to the qemu console, which is what we will be doing in this post.
+SBI runs in Machine-mode, which is the highest [privilege level](http://docs.keystone-enclave.org/en/latest/Getting-Started/How-Keystone-Works/RISC-V-Background.html#risc-v-privilieged-isa) on risc-v. The kernel will run in Supervisor-mode, and user programs will run in User-mode, which is the lowest privilege level.
 
-# Linking and setting up our runtime (optional)
+This architecture has a lot of benefits: SBI puts an abstraction layer between the kernel and the hardware, which allows us to write a single kernel that can run on any risc-v CPU, regardless of the extensions it supports, as long as it has a SBI implementation. SBI also provides a lot of useful functions like printing to and reading from the console, and it loads a device tree blob into memory, which we'll also be using later on to get information about the hardware.
 
-I'll quickly go over how you could setup the runtime for rust on risc-v, but we'll use the [riscv-rt](https://crates.io/crates/riscv-rt) crate to do all of this automatically for us in the end, so you can skip this section if you want.
+To interact with SBI, we will be using the `ecall` instruction, which is a trap instruction that will cause the CPU to jump to the SBI handler. The SBI handler will then handle the trap and call the appropriate function, and return to the kernel to continue execution. The SBI specification can be found [here](https://github.com/riscv-non-isa/riscv-sbi-doc/blob/master/riscv-sbi.adoc).
 
-The first thing we need to do is to setup our linker script. The linker is a program that takes a bunch of object files and combines them into a single binary and in our case, we need to tell it where to put the different sections of our binary so SBI can find them. The linker script for our kernel will look something like this:
+# Setting up the runtime
 
-{{ file(name = "src/linker.ld")}}
-
-```ld
-
-OUTPUT_ARCH(riscv) #
-ENTRY(_start)
-
-/* The base address of the program. RAM starts at 0x80000000 in QEMU
-   and SBI takes the first 2MB. */
-BASE_ADDRESS = 0x80200000;
-
-SECTIONS
-{
-    . = BASE_ADDRESS;
-    skernel = .;
-
-    stext = .;
-    .text : {
-        *(.text.entry)
-        . = ALIGN(4K);
-        strampoline = .;
-        *(.text.trampoline);
-        . = ALIGN(4K);
-        *(.text .text.*)
-    }
-
-    . = ALIGN(4K);
-    etext = .;
-    srodata = .;
-    .rodata : {
-        *(.rodata .rodata.*)
-        *(.srodata .srodata.*)
-    }
-
-    . = ALIGN(4K);
-    erodata = .;
-    sdata = .;
-    .data : {
-        *(.data .data.*)
-        *(.sdata .sdata.*)
-    }
-
-    . = ALIGN(4K);
-    edata = .;
-    sbss_with_stack = .;
-    .bss : {
-        *(.bss.stack)
-        sbss = .;
-        *(.bss .bss.*)
-        *(.sbss .sbss.*)
-    }
-
-    . = ALIGN(4K);
-    ebss = .;
-    ekernel = .;
-
-    /DISCARD/ : {
-        *(.eh_frame)
-    }
-}
-```
-
-Since we're using the ELF format for our kernel, we'll be distinguishing different regions of memory TEXT, DATA and BSS.
-
-- **TEXT**: This is where our code will be stored. This is where the CPU will execute instructions from.
-- **DATA**: This is where global variables will be stored
-- **BSS**: This is where we will setup our stack
-
-Now, we need to tell cargo to use this linker script. We can do this by adding the following to our `.cargo/config.toml` file:
-
-{{ file(name = ".cargo/config.toml")}}
-
-```toml
-
-[target.riscv64gc-unknown-none-elf]
-# ...
-rustflags = [
-  "-Clink-arg=-T./os/src/linker.ld",
-  "-Cforce-frame-pointers=yes",
-]
-```
-
-And now, we'll write a small assembly file that will be used as our entry point. This will
-setup the stack and jump to our rust entry point. We'll call this `entry.asm` and it will look like this:
-
-{{ file(name = "src/entry.asm")}}
-
-```riscv
-
-    .section .text.entry
-    .globl _start
-_start:
-    # set stack pointer to the top of the stack
-    la sp, boot_stack_top
-    # call the start function in the kernel (defined in ./main.rs)
-    call __main
-
-    # set the memory for the stack
-    .section .bss.stack
-    .globl boot_stack
-boot_stack:
-    .space 4096 * 16
-    .globl boot_stack_top
-boot_stack_top:
-```
-
-# Using RISCV-RT
-
-RISCV-RT ia a crate that will automatically setup our runtime for us so we don't have to do any of the stuff we did in the previous section.
-Additionally, it also provides us with a trap handler which will be very useful for handling interrupts and exceptions later on.
-We can add it to our project by adding the following to our `Cargo.toml` file:
+To make a binary that is able to be loaded as a kernel, we'll be using the [riscv-rt](https://crates.io/crates/riscv-rt) crate which provides a runtime for risc-v. It also provides us with a trap handler which will be very useful for handling interrupts and exceptions. Later on, we'll be writing our own runtime, but for now, we'll use this to get up and running quickly. We can add it to our project by adding the following to our `Cargo.toml` file:
 
 {{ file(name = "cargo.toml")}}
 
@@ -215,6 +101,32 @@ We can add it to our project by adding the following to our `Cargo.toml` file:
 # we'll be running our kernel in S-mode which is needed for SBI
 riscv-rt = {version = "0.11", features = ["s-mode"]}
 ```
+
+No we need to configure out linker. A linker is a program that takes a bunch of object files and combines them into a single binary and in our case, we need to tell it where to put the different sections of our binary so SBI can find them. `riscv-rt` already ships with a linker script, where we only need to change the memory addresses. We'll be using the following linker script to set up an appropriate layout for qmeu:
+
+{{ file(name = "link.x")}}
+
+```ld
+MEMORY
+{
+  RAM : ORIGIN = 0x80200000, LENGTH = 16M
+  /* 16MB ought to be enough for anyone */
+}
+
+REGION_ALIAS("REGION_TEXT", RAM);
+REGION_ALIAS("REGION_RODATA", RAM);
+REGION_ALIAS("REGION_DATA", RAM);
+REGION_ALIAS("REGION_BSS", RAM);
+REGION_ALIAS("REGION_STACK", RAM);
+/* we're skipping the heap as it's a bit easier to implement it using a rust array */
+```
+
+Since we're using the ELF format for our kernel, we'll be distinguishing different regions of memory TEXT, DATA and BSS.
+
+- **TEXT**: This is where our code will be stored. This is where the CPU will execute instructions from.
+- **DATA**: This is where global variables will be stored
+- **BSS**: This is where uninitialized global variables will be stored
+- **STACK**: The stack is used to store local variables and function arguments. It grows downwards, so it starts at the top of the memory region and grows towards the bottom (so it starts at `STACK_END` and grows towards `STACK_START`)
 
 # Resources
 
