@@ -41,7 +41,7 @@ h6 {
 
 h1 {
   font-size: 1.5rem;
-  margin-top: 2rem;
+  margin-top: 3rem;
   color: var(--color);
   // background: linear-gradient(93deg, #00ffe8 20%, #effbff 70%);
   // -webkit-background-clip: text;
@@ -52,7 +52,8 @@ h1 {
 }
 
 h2 {
-  font-size: 1.1rem;
+  margin-top: 1rem;
+  font-size: 1.3rem;
   font-weight: 400;
 }
 
@@ -92,12 +93,10 @@ p {
   margin-bottom: 20px;
   font-family: var(--font-family-text);
   letter-spacing: -0.003em;
-  line-height: 1.33;
-  // margin-bottom: 1rem;
-  // margin-top: -0.46em;
+  line-height: 1.5;
   margin-top: 0;
   margin-bottom: 1rem;
-  font-size: 17px;
+  font-size: 1.2em;
   word-break: break-word;
   font-weight: 400;
 
@@ -114,6 +113,11 @@ figure {
   display: table;
   max-width: 100%;
   margin: 25px 0;
+  width: 100%;
+
+  img {
+    border-radius: 6px;
+  }
 
   &.left {
     img {
