@@ -2,34 +2,35 @@
 title = "os-dev part 1: hello world"
 slug = "osdev-1"
 date = 2023-05-07
-draft = true
 
 [taxonomies]
 tags = ["os-dev", "rust", "riscv", "kernel"]
 series = ["os-dev"]
 +++
 
-> This is a series of posts about my journey creating a kernel in rust. You can find the code for this project [here](https://github.com/explodingcamera/pogos) and all of the posts in this series [here](/series/os-dev/).
+> This is a series of posts about my journey creating a kernel in rust. You can find the code for this project [here](https://github.com/explodingcamera/pogos/tree/part-1) and all of the posts in this series [here](/series/os-dev/).
 
 # Background
 
-A couple of years ago, I started learning a bit about low-level development through [nand2tetris](https://www.nand2tetris.org/) but recently I've gotten more interested in kernel and OS development by reading a lot of lwn.net and due to the inclusion of Rust support for writing Linux kernel modules. I've found that many blogs and guides on kernels are either outdated or not very accessible, so this will be a different (and hopefully more fun) approach, fully utilizing the Rust ecosystem to get up and running quickly and minimizing the use of unsafe and assembly code.
+A couple of years ago, I started learning a bit about low-level development through [nand2tetris](https://www.nand2tetris.org/) but recently I've gotten more interested in kernel and OS development by reading a lot of lwn.net and due to the inclusion of Rust support for writing Linux kernel modules. I've found that many blogs and guides on writing kernels and operating systems are either pretty outdated or not very accessible, so this will be a different (and hopefully more fun) approach, fully utilizing the Rust ecosystem to get up and running quickly and minimizing the use of unsafe and assembly code.
 
 This series requires pre-requisite knowledge of Rust or a similar programming language. All commands throughout the series will also be expecting a Linux terminal and might need to be adjusted slightly for macOS or Windows. I'll be using Arch Linux, but any distro should work fine. I'm trying to keep everything approachable, so if you have any questions or suggestions, feel free to reach out to me at [mail@henrygressmann.de](mailto:mail@henrygressmann.de)
+
+To follow along, I've also created a [GitHub Repo](https://github.com/explodingcamera/pogos) with a branch for each part of the series. You can find the code for this part [here](https://github.com/explodingcamera/pogos/tree/part-1).
 
 {{toc}}
 
 # CPU Architectures and RISC-V
 
-X86 is currently the dominant CPU architecture and has recently lost a bit of market share to emerging ARM CPUs like the Apple M1 or AWS Graviton. For this series, however, we'll be writing the kernel for RISC-V. RISC-V is a CPU Architecture released in 2015 under royalty-free open-source licenses. By focusing on small and modular instruction extensions and being standardized so recently, it avoids the sizeable historical baggage and weird design decisions plaguing x86 (check out [this](https://mjg59.dreamwidth.org/66109.html) article to see the horrendous boot process in action). RISC-V was also designed to be extensible, allowing for custom instruction extensions to be added to the base ISA. This enables us to use the same kernel on a wide range of CPUs, from small embedded devices to high-performance servers.
+X86 is currently the dominant CPU architecture and has recently lost a bit of market share to emerging ARM CPUs like the [Apple M Series](https://en.wikipedia.org/wiki/Apple_M2) or [AWS Graviton](https://en.wikipedia.org/wiki/AWS_Graviton). For this series, however, we'll be targeting RISC-V. RISC-V is a CPU Architecture released in 2015 under royalty-free open-source licenses. By focusing on small and modular instruction extensions and being standardized so recently, it avoids the sizeable historical baggage and weird design decisions plaguing x86 (check out [this](https://mjg59.dreamwidth.org/66109.html) article to see the horrendous boot process in action). RISC-V was also designed to be extensible, allowing for custom instruction extensions to be added to the base ISA. This enables us to use the same kernel on a wide range of CPUs, from small embedded devices to high-performance servers.
 
-I'll be using QEMU to emulate a CPU and (hopefully) run it on an actual board at the end of this series (my MangoPi MQ-Pro recently arrived, and I'm excited to try it).
+I'll be using [QEMU](https://www.qemu.org/) to emulate a CPU and (hopefully) run it on an actual board at the end of this series (my [MangoPi MQ-Pro](https://mangopi.org/mangopi_mqpro) recently arrived, and I'm excited to try it).
 
 # Setting up the environment
 
 Recent versions of Rust have (mostly) made setting up bare metal development a breeze. I'll be using Rust nightly, so we can build parts of the standard library ourselves using `rust-src` and use some unstable features that will be useful for OS development.
 
-Because the standard library depends on an operating system to provide memory allocation, threading, and other things, we need to mark our crate as `#![no_std]` and implement these ourselves.
+> Because the standard library depends on an operating system to provide memory allocation, threading, and other things, we need to later mark our crate as `#![no_std]` and implement these ourselves.
 
 To do this, we'll use the `core` library, a subset of the standard library that doesn't depend on an operating system. With it, we won't have access to things like `println!` or `Vec`, but we can still use types like `Option` and `Result` and many other useful APIs.
 In the next post, we'll also use the `alloc` create to enable us to use language features that require heap allocations, such as `Vec` and `Box`.
@@ -108,11 +109,15 @@ Firmware runs in Machine mode, the highest [privilege level](http://docs.keyston
 ## SBI and OpenSBI
 
 Compared to other CPU Architectures, RISC-V's boot process is straightforward.
-We're using OpenSBI (Supervisor Binary Interface) as our _M-mode RUNTIME firmware_, our bootloader. The version shipping with QEMU uses a Jump Address ([_FW_JUMP_](https://github.com/riscv-software-src/opensbi/blob/master/docs/firmware/fw_jump.md)), in this case, `0x80200000`, which is where we'll be putting our kernel.
+We're using OpenSBI as our Supervisor Execution Environment (SEE), our _M-mode RUNTIME firmware_.
+
+> SBI (Supervisor Binary Interface) is a standard interface for interacting with the SEE, and OpenSBI is an implementation of this standard.
+
+The version shipping with QEMU uses a Jump Address ([_FW_JUMP_](https://github.com/riscv-software-src/opensbi/blob/master/docs/firmware/fw_jump.md)), in this case, `0x80200000`, which is where we'll be putting our kernel. QEMU will load our kernel into memory and jump to 0x80000000, from where OpenSBI will then jump to 0x80200000, where our kernel is located.
 
 {{ figure(caption = "RISC-V Boot Flow", position="center", src="/posts/os-dev-1/boot.svg") }}
 
-This architecture has a lot of benefits: SBI puts an abstraction layer between the kernel and the hardware, which allows us to write a single kernel that can run on any RISC-V CPU, regardless of the extensions it supports, as long as it has an SBI implementation. SBI also provides many functions like printing to and reading from the console, and it loads a device tree blob into memory, which we'll also be using later on to get information about the hardware.
+This architecture has a lot of benefits: SBI puts an abstraction layer between the kernel and the hardware, which allows us to write a single kernel that can run on any RISC-V CPU, regardless of the extensions it supports, as long as it has an SBI implementation. SBI also provides many functions like printing to and reading from the console, and it loads a flattened device tree (FDT) into memory, which we'll also be using later on to get information about the hardware.
 
 To interact with SBI, we will use the `ecall` instruction, a trap instruction that will cause the CPU to jump to the SBI handler. The SBI handler will then handle the trap and call the appropriate function, and return to the kernel to continue execution. The SBI specification can be found [here](https://github.com/riscv-non-isa/riscv-sbi-doc/blob/master/riscv-sbi.adoc).
 
@@ -161,12 +166,12 @@ REGION_ALIAS("REGION_TEXT", RAM);
 REGION_ALIAS("REGION_RODATA", RAM);
 REGION_ALIAS("REGION_DATA", RAM);
 REGION_ALIAS("REGION_BSS", RAM);
+REGION_ALIAS("REGION_HEAP", RAM);
 REGION_ALIAS("REGION_STACK", RAM);
-/* we're skipping the heap as it's a bit easier to implement it using an array */
 ```
 
 `link.x` will be provided by `riscv-rt`, and we don't need to change it for now.
-To make sure that our linker can find our linker script, we need to add the following to our `build.rs` file:
+To make sure that the linker can find our script, we need to add the following to our `build.rs` file:
 
 {{ file(name = "build.rs")}}
 
@@ -189,11 +194,11 @@ fn main() {
 
 # Hello world
 
-Now that we have our runtime, we can start writing our kernel. We'll start by writing a simple hello world program that prints "Hello world!" to the console and then shuts down the machine.
+Now that we have the linker configures, we can start writing our kernel. We'll start by writing a simple hello world program that prints "Hello world!" to the console and then shuts down the machine.
 
 ## Printing
 
-Since we're in a `no_std` environment, we can't use the standard library and must implement a print function ourselves. We'll be using the `sbi` crate to interact with SBI, which provides a `console_putchar` function that we can use to print a single character to the console. We can use this to implement a simple print function that prints a string to the console. This print function iterates over the characters in the string and prints them to the QEMU debug console.
+Since we're in a `no_std` environment, we can't use the standard library and must implement a print function ourselves. We'll be using the `sbi` crate to interact with our Supervisor Execution Environment (SEE) OpenSBI, which provides a `console_putchar` function that we can use to print a single character to the console. We can use this to implement a simple print function that prints a string to the console. This print function iterates over the characters in the string and prints them to the QEMU debug console.
 
 {{ file(name = "src/utils.rs")}}
 
@@ -229,7 +234,7 @@ impl core::fmt::Write for Writer {
 #[macro_export]
 macro_rules! print {
     ($fmt:literal$(, $($arg: tt)+)?) => {
-        $crate::util::print_args(format_args!($fmt $(,$($arg)+)?))
+        $crate::utils::print_args(format_args!($fmt $(,$($arg)+)?))
     }
 }
 
@@ -237,11 +242,26 @@ macro_rules! print {
 macro_rules! println {
     ($fmt:literal$(, $($arg: tt)+)?) => {{
         $crate::print!($fmt $(,$($arg)+)?);
-        $crate::util::print("\n");
+        $crate::utils::print("\n");
     }};
     () => {
-        $crate::util::print("\n");
+        $crate::utils::print("\n");
     }
+}
+```
+
+While we're at it, let's also add a quick method to shut down the system:
+
+{{ file(name = "src/utils.rs")}}
+
+```rust
+
+pub fn shutdown() -> ! {
+    let _ = sbi::system_reset::system_reset(
+        sbi::system_reset::ResetType::Shutdown,
+        sbi::system_reset::ResetReason::NoReason,
+    );
+    unreachable!("System reset failed");
 }
 ```
 
@@ -278,7 +298,11 @@ fn panic(info: &PanicInfo) -> ! {
 
 ## Entry point
 
-Now we can finally write our hello world program. We'll be using the `entry` macro from `riscv-rt` to mark our main function as the entry point of our program. This macro will set up the stack and call our main function. Something you might not have seen before is the `!` return type. This is a special type that means that the function never returns. Since we're writing a kernel, there's nowhere for our program to return to.
+Now we can finally write our hello world program. We'll be using the `entry` macro from `riscv-rt` to mark our main function as the entry point of our program. RISC-V-RT will load some assembly to set up a basic c-runtime environment and then call our main function. The main function will be passed the hart id of the hart that is executing it, which is passed to us by OpenSBI through the `a0` register.
+
+> Hart is the RISC-V term for a CPU core. A RISC-V system can have multiple harts, each with its own register state and program counter.
+
+Something you might not have seen before is the `!` return type. This is a special type that means that the function never returns. Since we're writing a kernel, there's nowhere for our program to return to, so we'll need to either loop forever or shut down the machine.
 
 {{ file(name = "src/main.rs")}}
 
@@ -290,7 +314,7 @@ Now we can finally write our hello world program. We'll be using the `entry` mac
 #![feature(lazy_cell)]
 #![allow(unused)]
 
-extern crate alloc;
+// extern crate alloc; - next chapter
 extern crate riscv_rt;
 
 use riscv_rt::entry;
@@ -301,16 +325,33 @@ mod utils;
 fn main(a0: usize) -> ! {
     println!("Hello world from hart {}\n", a0);
 
-    sbi::system_reset::system_reset(
-        sbi::system_reset::ResetType::Shutdown,
-        sbi::system_reset::ResetReason::NoReason,
-    );
+    utils::shutdown();
 }
 ```
 
 # Review
 
-Once we run `cargo run`, we should see "Hello world!" printed on the console.
+Once we run `cargo run`, we should see "Hello world!" printed on the console:
+
+{{ file(name = "terminal")}}
+
+```console
+
+$ cargo run
+
+OpenSBI v1.2
+   ____                    _____ ____ _____
+  / __ \                  / ____|  _ \_   _|
+ | |  | |_ __   ___ _ __ | (___ | |_) || |
+ | |  | | '_ \ / _ \ '_ \ \___ \|  _ < | |
+ | |__| | |_) |  __/ | | |____) | |_) || |_
+  \____/| .__/ \___|_| |_|_____/|____/_____|
+        | |
+        |_|
+
+Hello world from hart 0
+```
+
 In the next few posts, we'll start handling interrupts and exceptions, allocate data on the heap, set up a page table, and much more, so stay tuned!
 
 To dive in deeper, I also recommend reading Phil Oppermann's fantastic [blog](https://os.phil-opp.com/), where he creates a kernel in Rust for the x86 architecture, and Stephen Marz's [blog](https://osblog.stephenmarz.com/) about RISC-V and Rust.
