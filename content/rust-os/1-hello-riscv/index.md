@@ -114,13 +114,13 @@ We're using OpenSBI as our Supervisor Execution Environment (SEE), our _M-mode R
 
 > SBI (Supervisor Binary Interface) is a standard interface for interacting with the SEE, and OpenSBI is an implementation of this standard.
 
-The version shipping with QEMU uses a Jump Address ([_FW_JUMP_](https://github.com/riscv-software-src/opensbi/blob/master/docs/firmware/fw_jump.md)), in this case, `0x80200000`, which is where we'll be putting our kernel. QEMU will load our kernel into memory and jump to 0x80000000, from where OpenSBI will then jump to 0x80200000, where our kernel is located.
+The version shipping with QEMU uses a Jump Address ([_FW_JUMP_](https://github.com/riscv-software-src/opensbi/blob/master/docs/firmware/fw_jump.md)), in this case, `0x80200000`, which is where we'll be putting our kernel. QEMU will load our kernel into memory and jump to `0x80000000`, from where OpenSBI will then jump to `0x80200000`, where our kernel is located.
 
 {{ figure(caption = "RISC-V Boot Flow", position="center", src="./assets/boot.svg") }}
 
 This architecture has a lot of benefits: SBI puts an abstraction layer between the kernel and the hardware, which allows us to write a single kernel that can run on any RISC-V CPU, regardless of the extensions it supports, as long as it has an SBI implementation. SBI also provides many functions like printing to and reading from the console, and it loads a flattened device tree (FDT) into memory, which we'll also be using later on to get information about the hardware.
 
-To interact with SBI, we will use the `ecall` instruction, a trap instruction that will cause the CPU to jump to the SBI handler. The SBI handler will then handle the trap and call the appropriate function, and return to the kernel to continue execution. The SBI specification can be found [here](https://github.com/riscv-non-isa/riscv-sbi-doc/blob/master/riscv-sbi.adoc).
+To interact with SBI, we will use the `ecall` instruction, a trap instruction that will cause the CPU to jump to the Supervisor Execution Environment. The SEE handler will then handle the trap and call the appropriate function, and return to the kernel to continue execution. The SBI specification can be found [here](https://github.com/riscv-non-isa/riscv-sbi-doc/blob/master/riscv-sbi.adoc).
 
 {{ figure(caption = "Calling SBI", position="center", src="./assets/sbi.svg") }}
 
@@ -195,7 +195,7 @@ fn main() {
 
 # Hello world
 
-Now that we have the linker configures, we can start writing our kernel. We'll start by writing a simple hello world program that prints "Hello world!" to the console and then shuts down the machine.
+Now that we have the linker configured, we can start writing our kernel. We'll start by writing a simple hello world program that prints "Hello world!" to the console and then shuts down the machine.
 
 ## Printing
 
@@ -207,7 +207,8 @@ Since we're in a `no_std` environment, we can't use the standard library and mus
 
 pub fn print(t: &str) {
     t.chars().for_each(
-        |c| sbi::legacy::console_putchar(c.try_into().unwrap_or(b'?')), // TODO: replace with the new SBI debug extension once it's available in all SBI implementations
+        // FUTURE: replace with the new SBI debug extension once it's available in all SBI implementations
+        |c| sbi::legacy::console_putchar(c.try_into().unwrap_or(b'?')),
     );
 }
 ```
@@ -299,7 +300,7 @@ fn panic(info: &PanicInfo) -> ! {
 
 ## Entry point
 
-Now we can finally write our hello world program. We'll be using the `entry` macro from `riscv-rt` to mark our main function as the entry point of our program. RISC-V-RT will load some assembly to set up a basic c-runtime environment and then call our main function. The main function will be passed the hart id of the hart that is executing it, which is passed to us by OpenSBI through the `a0` register.
+Now we can finally write our hello world program. We'll be using the `entry` macro from `riscv-rt` to mark our main function as the entry point of our program. `riscv-rt` will load some assembly to set up a basic c-runtime environment and then call our main function. The main function will be passed the hart id of the hart that is executing it, which is passed to us by OpenSBI through the `a0` register.
 
 > Hart is the RISC-V term for a CPU core. A RISC-V system can have multiple harts, each with its own register state and program counter.
 
