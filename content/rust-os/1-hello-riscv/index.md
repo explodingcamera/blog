@@ -54,7 +54,7 @@ rustup component add rust-src --toolchain nightly
 # add the RISC-V target
 # - GC stands for the generic (IMAFD extensions) and compressed extensions
 #   These are the most common extensions which are required for most applications
-# - elf is the executable format we'll be using
+# - ELF is the executable format we'll be using
 #   This is the format Linux and most other UNIX-like operating systems use for executables.
 #   Other common formats are PE (windows) and Mach-O (macOS).
 #   (On x86, we'd have to endure the pain of dealing with PE binaries)
@@ -147,7 +147,7 @@ sbi = "0.2" # provides a wrapper around the SBI functions to make them easier to
 
 Now we need to configure our linker. A linker is a program that takes a bunch of object files and combines them into a single binary, and - in our case - we need to tell it where to put the different sections of our binary so SBI can find them. `riscv-rt` already ships with a linker script. We will only need to tell it about the memory layout of our kernel.
 
-Since we're using the ELF format for our kernel, we'll be distinguishing different regions of memory TEXT, DATA, and BSS.
+Since we're using the Executable and Linking Format (ELF) for our kernel, we'll be distinguishing different regions of memory TEXT, DATA, and BSS.
 
 {{ figure(caption = "ELF Memory Layout", position="center", src="./assets/elf.svg") }}
 
