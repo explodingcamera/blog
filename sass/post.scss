@@ -74,7 +74,6 @@ ul.toc {
   %tags {
     margin-bottom: 20px;
     font-size: 1rem;
-    opacity: 0.5;
   }
 
   &-tags {
@@ -86,6 +85,7 @@ ul.toc {
   &-tags-inline {
     @extend %tags;
 
+    margin-left: 0.5rem;
     display: inline;
 
     @media (max-width: $phone-max-width) {
@@ -142,10 +142,16 @@ ul.toc {
   }
 }
 
+.post-list:first-of-type {
+  margin-top: 2rem;
+}
+
 .post-list {
+  margin-bottom: 0.7rem;
   .post-date {
     color: var(--accent-alpha-70);
     text-decoration: none;
+    margin-right: 0.5rem;
   }
 
   a {
@@ -155,9 +161,20 @@ ul.toc {
   .post-list-title {
     text-decoration: underline;
     text-decoration-color: gray;
+    opacity: 0.8;
+    transition: opacity 0.2s ease-in-out;
+    &:hover {
+      opacity: 1;
+    }
   }
 
   .post-tag {
     text-decoration: none;
+
+    opacity: 0.4;
+    transition: opacity 0.2s ease-in-out;
+    &:hover {
+      opacity: 1;
+    }
   }
 }

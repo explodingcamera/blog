@@ -1,11 +1,12 @@
 +++
-title = "os-dev part 1: hello world"
-slug = "osdev-1"
+title = "Operating Systems in Rust #1: Hello RISC-V"
 date = 2023-05-07
+aliases = ["osdev-1"]
+transparent = true
 
 [taxonomies]
-tags = ["os-dev", "rust", "riscv", "kernel"]
-series = ["os-dev"]
+tags = ["rust", "riscv", "kernel"]
+series = ["rust-os"]
 +++
 
 > This is a series of posts about my journey creating a kernel in rust. You can find the code for this project [here](https://github.com/explodingcamera/pogos/tree/part-1) and all of the posts in this series [here](/series/os-dev/).
@@ -104,7 +105,7 @@ To better understand how we'll be booting our kernel, we'll first have to unders
 
 Firmware runs in Machine mode, the highest [privilege level](http://docs.keystone-enclave.org/en/latest/Getting-Started/How-Keystone-Works/RISC-V-Background.html#RISC-V-privilieged-isa) on RISC-V. The kernel will run in Supervisor-mode, and user programs will run in User-mode, the lowest privilege level.
 
-{{ figure(caption = "The three privilege levels of RISC-V", position="center", src="/posts/os-dev-1/rings.svg") }}
+{{ figure(caption = "The three privilege levels of RISC-V", position="center", src="./assets/rings.svg") }}
 
 ## SBI and OpenSBI
 
@@ -115,13 +116,13 @@ We're using OpenSBI as our Supervisor Execution Environment (SEE), our _M-mode R
 
 The version shipping with QEMU uses a Jump Address ([_FW_JUMP_](https://github.com/riscv-software-src/opensbi/blob/master/docs/firmware/fw_jump.md)), in this case, `0x80200000`, which is where we'll be putting our kernel. QEMU will load our kernel into memory and jump to 0x80000000, from where OpenSBI will then jump to 0x80200000, where our kernel is located.
 
-{{ figure(caption = "RISC-V Boot Flow", position="center", src="/posts/os-dev-1/boot.svg") }}
+{{ figure(caption = "RISC-V Boot Flow", position="center", src="./assets/boot.svg") }}
 
 This architecture has a lot of benefits: SBI puts an abstraction layer between the kernel and the hardware, which allows us to write a single kernel that can run on any RISC-V CPU, regardless of the extensions it supports, as long as it has an SBI implementation. SBI also provides many functions like printing to and reading from the console, and it loads a flattened device tree (FDT) into memory, which we'll also be using later on to get information about the hardware.
 
 To interact with SBI, we will use the `ecall` instruction, a trap instruction that will cause the CPU to jump to the SBI handler. The SBI handler will then handle the trap and call the appropriate function, and return to the kernel to continue execution. The SBI specification can be found [here](https://github.com/riscv-non-isa/riscv-sbi-doc/blob/master/riscv-sbi.adoc).
 
-{{ figure(caption = "Calling SBI", position="center", src="/posts/os-dev-1/sbi.svg") }}
+{{ figure(caption = "Calling SBI", position="center", src="./assets/sbi.svg") }}
 
 # Setting up the runtime
 
@@ -148,7 +149,7 @@ Now we need to configure our linker. A linker is a program that takes a bunch of
 
 Since we're using the ELF format for our kernel, we'll be distinguishing different regions of memory TEXT, DATA, and BSS.
 
-{{ figure(caption = "ELF Memory Layout", position="center", src="/posts/os-dev-1/elf.svg") }}
+{{ figure(caption = "ELF Memory Layout", position="center", src="./assets/elf.svg") }}
 
 To make sure that our kernel is loaded at the correct address, we need to add the following to our `memory.x` file:
 
@@ -335,7 +336,7 @@ Once we run `cargo run`, we should see "Hello world!" printed on the console:
 
 {{ file(name = "terminal")}}
 
-```console
+```
 
 $ cargo run
 

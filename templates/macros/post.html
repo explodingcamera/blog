@@ -93,14 +93,17 @@
 {% macro list_posts(pages) %}
 <ul>
     {%- for page in pages %}
-    {%- if page.draft %}
-    {% continue %}
-    {% endif -%}
     <li class="post-list">
         <a href="{{ page.permalink | safe }}">
-            <span class="post-date">{{ page.date }}</span>
+            <span class="post-date">
+                {%- if page.draft %}
+                <span class="post-draft">Draft&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                {% else %}
+                {{ page.date }}
+                {% endif -%}
+            </span>
             <span class="post-list-title">{{ page.title }}</span></a>
-        {{ post_macros::tags(page=page, short=true) }}
+        <!--  {{ post_macros::tags(page=page, short=true) }} -->
     </li>
     {% endfor -%}
 </ul>

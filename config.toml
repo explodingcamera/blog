@@ -3,10 +3,12 @@ build_search_index = true
 compile_sass = true
 description = "a blog about software development, technology and other stuff"
 generate_feed = true
+
 taxonomies = [
   {name = "tags"},
   {name = "series", feed = true},
 ]
+
 title = "henry's blog"
 
 [markdown]
