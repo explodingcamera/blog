@@ -1,12 +1,2 @@
-import barba from "https://cdn.skypack.dev/pin/@barba/core@v2.9.7-eogaRu5SwKJ4kikvgK0t/mode=imports,min/optimized/@barba/core.js";
-
-barba.init({
-  transitions: [
-    {
-      name: "default-transition",
-      enter() {
-        // nextPreset(visualizer);
-      },
-    },
-  ],
-});
+// https://github.com/explodingcamera/esm/blob/main/packages/spaify
+var l=new Map;l.set(window.location.href,document.cloneNode(!0));async function y(t,e){if(l.has(t))return {doc:l.get(t),firstLoad:!1};let n=await fetch(t,{signal:e});if(!n.ok)throw n.statusText;let i=new DOMParser().parseFromString(await n.text(),"text/html");return l.set(t,i),{doc:i,firstLoad:!0}}var g=(t={})=>{if(window.__spaify)throw new Error("Spaify's already initialized");window.__spaify=!0;let e=t.attribute||"data-spaify",n={attribute:e,selectors:{once:`[${e}-run=once]`,always:`[${e}-run=always]`,ignore:`a[${e}-ignore]`,main:`body *[${e}-main]`,...t.selectors}},i=o=>{let r=o.target.closest("a");!r||r.tagName!=="A"||window.location.origin!==r.origin||r.matches(n.selectors.ignore)||(o.preventDefault(),f(r.href),history.pushState({url:r.href},"",r.href));},c=new AbortController,f=async o=>{let r=()=>window.location.assign(o);c.signal&&c.abort(),c=new AbortController;let d;try{d=await y(o,c.signal);}catch(a){return a==="abort"&&r()}let s=d.doc.cloneNode(!0),h=s.querySelectorAll(`head script${n.selectors.always},body>script${n.selectors.always},${n.selectors.main} script:not(${n.selectors.once})`),p=s.querySelector(n.selectors.main),w=document.querySelector(n.selectors.main);if(!w||!p)return r();w.replaceWith(p),h.forEach(a=>m(a)),d.firstLoad&&s.querySelectorAll(n.selectors.once).forEach(a=>m(a)),s.title&&(document.title=s.title),window.scrollTo(0,0);},u=o=>f(window.location.href);return document.addEventListener("click",i),window.addEventListener("popstate",u),{unload:()=>{document.removeEventListener("click",i),window.removeEventListener("popstate",u);}}},m=t=>{if(!(t instanceof HTMLScriptElement))return;let e=document.createElement("script");e.innerHTML=t.innerHTML,t.innerHTML!==""&&(e.innerHTML=t.innerHTML),t.integrity!==""&&(e.integrity=t.integrity),t.referrerPolicy!==""&&(e.referrerPolicy=t.referrerPolicy),t.crossOrigin!==""&&(e.crossOrigin=t.crossOrigin),t.noModule!==!1&&(e.noModule=t.noModule),t.type!==""&&(e.type=t.type),t.src!==""&&(e.src=t.src),e.setAttribute("data-spaify","true"),document.head.appendChild(e);};g();

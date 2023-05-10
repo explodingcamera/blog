@@ -23,8 +23,8 @@
     {% endblock extra_head -%}
 </head>
 
-<body data-barba="wrapper">
-    <div class="container" data-barba="container">
+<body>
+    <div class="container" data-spaify-main>
         {% block header %}
         <header class="header">
             <div class="header__inner">
@@ -67,7 +67,7 @@
                 <div class="copyright copyright--user">
                     <a href="/tags">tags</a>
                     <a href="/series">series</a>
-                    <a data-barba-prevent href="/atom.xml">rss</a>
+                    <a data-spaify-ignore href="/atom.xml">rss</a>
                     <a href="https://henrygressmann.de/impressum">impressum</a>
                     <a href="https://henrygressmann.de">henrygressmann.de</a>
                 </div>
