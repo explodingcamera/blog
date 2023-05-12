@@ -19,7 +19,8 @@
 
 {% macro toc(page) %}
 {%- if page.toc %}
-<details class="toc">
+<br />
+<details class="toc" open>
     <summary class="toc__title">Table of Contents</summary>
     <ul class="toc">
         {% for h1 in page.toc %}
@@ -44,10 +45,19 @@
 {% macro date(page) %}
 <span class="post-date">
     {%- if page.date %}
-    {{ page.date | date(format="%Y-%m-%d") }}
+    {{ page.date | date(format="%h %d, %Y") }}
     {% endif -%}
 </span>
 {% endmacro post_date %}
+
+{% macro updated(page) %}
+<span class="post-updated">
+    {%- if page.updated %}
+    last updated on
+    {{ page.updated | date(format="%h %d, %Y") }}
+    {% endif -%}
+</span>
+{% endmacro updated %}
 
 
 {% macro earlier_later(page) %}
@@ -85,24 +95,32 @@
 <div class="post-meta-inline">
     {{ post_macros::date(page=page) }}
 </div>
-
 {{ post_macros::tags(page=page) }}
+<div class="post-meta-small">
+    {{ post_macros::updated(page=page) }}
+</div>
 {% endmacro header %}
 
 
 {% macro list_posts(pages) %}
-<ul>
+<ul class="post-list">
     {%- for page in pages %}
-    <li class="post-list">
+    <li>
         <a href="{{ page.permalink | safe }}">
             <span class="post-date">
                 {%- if page.draft %}
                 <span class="post-draft">Draft&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
                 {% else %}
-                {{ page.date }}
+                {{ page.date | date(format="%h %d, %Y") }}
                 {% endif -%}
             </span>
-            <span class="post-list-title">{{ page.title }}</span></a>
+            <span class="post-list-title">{{ page.title }}</span>
+            {%- if page.description %}
+            <div class="post-list-description">
+                {{ page.description | safe }}
+            </div>
+            {% endif -%}
+        </a>
         <!--  {{ post_macros::tags(page=page, short=true) }} -->
     </li>
     {% endfor -%}

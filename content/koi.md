@@ -1,5 +1,6 @@
 +++
 title = "building an image format for fun and profit"
+description = "Creating koi, the kinda okay image format to learn about image compression"
 date = 2023-04-02
 
 [taxonomies]

@@ -1,4 +1,3 @@
-{% import "macros/date.html" as date_macros -%}
 {% import "macros/head.html" as head_macros -%}
 {% import "macros/menu.html" as menu_macros -%}
 {% import "macros/post.html" as post_macros -%}
@@ -54,8 +53,23 @@
         <div class="content">
             {% block content %}
             <div class="post">
-                code snippets, random projects, and other stuff
+
+                <br />
+                <br />
+
+                <!-- blog description -->
+                Hello there! Welcome to my blog, a simple nook in the vast digital landscape where I share my
+                thoughts and experiences with programming, everything open source and operating systems. Enjoy your stay
+                and happy
+                coding!
+                <br />
+                <br />
+
+
                 {% set section = get_section(path="_index.md") %}
+
+                <br />
+                <h2>Newest Posts</h2>
                 {{ post_macros::list_posts(pages=section.pages) }}
             </div>
             {% endblock content %}

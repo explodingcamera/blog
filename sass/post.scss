@@ -7,7 +7,10 @@
 
 .toc__title {
   cursor: pointer;
-  font-weight: 600;
+  font-weight: 800;
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+  user-select: none;
 }
 
 ul.toc {
@@ -52,6 +55,10 @@ ul.toc {
 
   &-meta {
     @extend %meta;
+  }
+
+  &-meta-small {
+    opacity: 0.7;
   }
 
   &-meta-inline {
@@ -142,16 +149,36 @@ ul.toc {
   }
 }
 
-.post-list:first-of-type {
-  margin-top: 2rem;
-}
-
 .post-list {
-  margin-bottom: 0.7rem;
+  margin: 0;
+
+  > li {
+    margin-bottom: 0.7rem;
+    &::before {
+      content: "" !important;
+    }
+
+    transition: all 0.2s ease-in-out;
+
+    &:hover {
+      .post-date {
+        opacity: 0.9;
+      }
+      .post-list-title {
+        opacity: 1;
+      }
+      .post-list-description {
+        opacity: 1;
+      }
+    }
+  }
+
   .post-date {
-    color: var(--accent-alpha-70);
+    color: #cecece;
+    opacity: 0.7;
     text-decoration: none;
     margin-right: 0.5rem;
+    font-weight: 200;
   }
 
   a {
@@ -162,19 +189,16 @@ ul.toc {
     text-decoration: underline;
     text-decoration-color: gray;
     opacity: 0.8;
-    transition: opacity 0.2s ease-in-out;
-    &:hover {
-      opacity: 1;
-    }
+  }
+
+  .post-list-description {
+    margin-top: 0.2rem;
+    margin-bottom: 1.4rem;
+    opacity: 0.6;
   }
 
   .post-tag {
     text-decoration: none;
-
     opacity: 0.4;
-    transition: opacity 0.2s ease-in-out;
-    &:hover {
-      opacity: 1;
-    }
   }
 }
