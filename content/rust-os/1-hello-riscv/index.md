@@ -333,7 +333,6 @@ Something you might not have seen before is the `!` return type. This is a speci
 #![feature(lazy_cell)]
 #![allow(unused)]
 
-// extern crate alloc; - next chapter
 extern crate riscv_rt;
 
 use riscv_rt::entry;

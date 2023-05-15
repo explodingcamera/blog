@@ -25,14 +25,11 @@ A linear allocator - sometimes also called a arena allocator - just keeps track 
 
 {{ figure(caption = "Linear Allocators", position="center", src="./assets/linear-allocator.svg") }}
 
-First, we'll create a new file `src/allocator.rs` and will create the basic data structure for our allocator:
+First, we'll create a new file `src/linear-allocator.rs` and will create the basic data structure for our allocator:
 
-{{ file(name = "src/allocator.rs") }}
+{{ file(name = "src/linear-allocator.rs") }}
 
 ```rust
-
-// be sure to enable the `alloc_api` feature in your top-level rust file
-// #![feature(allocator_api)]
 
 use core::sync::atomic::{AtomicUsize};
 
@@ -44,8 +41,11 @@ pub struct LinearAllocator<const T: usize> {
     memory: [u8; T], // our in-memory "arena"
 }
 
+// allow our allocator to be shared between threads
+unsafe impl Sync for LinearAllocator {}
+
 impl LinearAllocator {
-    pub fn new(buffer: &'static mut [u8]) -> Self {
+    pub fn init(buffer: &'static mut [u8]) -> Self {
         Self { head: AtomicUsize::new(0), memory }
     }
 }
@@ -84,16 +84,68 @@ unsafe impl<const T: usize> GlobalAlloc for LinearAllocator<T> {
         let new_head = head + size;
 
         // are we out of memory?
-        if new_head > self.memory.len() {
+        if self.start.add(new_head) > self.end {
             return core::ptr::null_mut();
         }
 
         self.head.store(new_head, Ordering::Relaxed);
-        NonNull::new_unchecked(self.memory.as_ptr().add(head) as *mut u8).as_ptr()
+        NonNull::new_unchecked(self.start.add(head) as *mut u8).as_ptr()
     }
 
     unsafe fn dealloc(&self, _ptr: *mut u8, _layout: Layout) {
         // no-op
     }
+}
+```
+
+Now that we have our allocator, we can use it to allocate memory in our kernel. We'll start by allocating a buffer for it to use:
+
+{{ file(name = "src/heap.rs") }}
+
+```rust
+#[global_allocator]
+static mut KERNEL_HEAP_ALLOCATOR: LinearAllocator = LinearAllocator::empty();
+static mut KERNEL_HEAP: [u8; 0x20000] = [0; 0x20000]; // this will allocate 128kb of memory in the .bss section
+
+/// Initialize the heap allocator.
+pub unsafe fn init_kernel_heap() {
+  let heap_start = KERNEL_HEAP.as_ptr() as usize;
+  let heap_size = KERNEL_HEAP.len();
+  KERNEL_HEAP_ALLOCATOR.init(heap_start, heap_size);
+}
+
+```
+
+{{ file(name = "src/main.rs") }}
+
+```rust
+
+#![no_std]
+#![no_main]
+#![feature(panic_info_message)]
+#![feature(allocator_api)] // new
+#![feature(lazy_cell)]
+#![allow(unused)]
+
+extern crate alloc; // new
+extern crate riscv_rt;
+
+use riscv_rt::entry;
+mod panic_handler;
+mod utils;
+
+mod linear_allocator; // new
+mod heap; // new
+
+#[entry]
+fn main(a0: usize) -> ! {
+    println!("Hello world from hart {}\n", a0);
+
+    // Setup everything required for the kernel to run
+    unsafe {
+        heap::init_kernel_heap(); // new
+    }
+
+    utils::shutdown();
 }
 ```
