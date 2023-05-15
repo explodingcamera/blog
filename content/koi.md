@@ -15,7 +15,7 @@ This post has been updated to reflect changes in the koi file format. The origin
 I've been working on a new image format called [koi](https://github.com/explodingcamera/koi) - **the kinda okay image format**  
 and I wanted to share some details.
 
-It's a lossless image format based on ideas from [qoi](https://phoboslab.org/log/2021/11/qoi-fast-lossless-image-compression) and [qoir](https://nigeltao.github.io/blog/2022/qoir.html) that is designed to use a small amount of memory and be fast to decode. I have exactly zero experience with image formats, so this is a learning experience for me. As it currently stands, it outperforms many other image formats in terms of compression ratio and decoding speed images with a lot of flat colors, but more on that later.
+It's a lossless image format based on ideas from [qoi](https://phoboslab.org/log/2021/11/qoi-fast-lossless-image-compression) and [qoir](https://nigeltao.github.io/blog/2022/qoir.html) that is designed to use a small amount of memory and be fast to decode. I have exactly zero experience with image formats, so this is a learning experience for me. As it currently stands, it outperforms many other image formats in terms of compression ratio and decoding speed on images with a lot of flat colors, but more on that later.
 
 # The basics
 
@@ -291,7 +291,7 @@ for chunk in chunks {
 
 In some places, writing ideomatic Rust code also had a big impact on the performance. While the Rust compiler is very good at optimizing code, it can't do magic and sometimes it's necessary to help it out a bit. For example, in the main loop of the decoder, I was using something like `chunks.iter().fold(|chunk| ...).collect()` , which even when refactored to not allocate a new vector for every chunk, was still a lot slower than using loops directly. The promise of zero-cost abstractions didn't hold up here, and while I normally go for readability over performance, in this case it was necessary to make the code a bit more verbose to get the performance I wanted.
 
-A different case where the rust compiler was able to optimize the code very well was when I started to use `#[inline]` on some of my functions. Here, more often then not, using `#[inline]` decreased the performance of the code, so this is something that should be used with caution and only after profiling.
+A different case where the Rust compiler was able to optimize the code very well was when I started to use `#[inline]` on some of my functions. Here, more often then not, using `#[inline]` decreased the performance of the code, so this is something that should be used with caution and only after profiling.
 
 # Conclusion
 
