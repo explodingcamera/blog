@@ -1,6 +1,6 @@
 +++
-title = "stop building upload apis"
-description = "Using presigned URLs to upload files directly to S3"
+title = "Stop building your own file upload systems"
+description = "Using presigned URLs to upload files directly to S3-like storage systems"
 date = 2023-03-14
 draft = false
 
