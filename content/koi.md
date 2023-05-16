@@ -21,7 +21,7 @@ It's a lossless image format based on ideas from [qoi](https://phoboslab.org/log
 
 To start, let's look at how the file format is structured.
 
-To identify the file format, the first 8 bytes must be `KOI \xF0\x9F\x99\x82`. Following that is a header with metadata about the image. The header is a series of key-value pairs, encoded using Binary JSON (BSON). The following keys are supported:
+To identify the file format, the first 8 bytes must be `KOI `. Following that is a header with metadata about the image. The header is a series of key-value pairs, encoded using Binary JSON (BSON). The following keys are supported:
 
 - `v` (version): The file format version
 - `w` (width): The image width in pixels. Must be greater than zero. (unsigned 64-bit integer)
@@ -303,7 +303,9 @@ A different case where the Rust compiler was able to optimize the code very well
 
 # Conclusion
 
-Creating a new image format is actually a lot of fun, and It's totally possible to create something that works well for special use cases like icons or game assets. I'm happy with the results so far and as a next step I want to add Rust `no_std` support so I can use it in the kernel project I'm working on to test displaying images on the screen.
+Creating a new image format is actually a lot of fun, and It's totally possible to create something that works well for special use cases like icons or game assets. When taking the right shortcuts, it's possible to implement something usable in a few days when utilizing existing compression algorithms and metadata formats, without needing to utilize more advanced compression algorithms. Switching to a more advanced compression algorithm like Zstd or Brotli also enables the format to be purpose built for a specific decompression budget.
+
+I'm happy with the results so far and as a next step I want to add Rust `no_std` support so I can use it in the kernel project I'm working on to test displaying images on the screen.
 
 Some other things I want to look into is adding support for more color spaces, like YCbCr and CMYK, and maybe even support for animation. I also want to look into adding support for more compression algorithms, like LZ4 or Zstd, and maybe even support for lossy compression. Also, I'm not happy with BSON as a metadata format, so I want to look into using something like [MessagePack](https://msgpack.org/index.html) instead. And lastly, there's still a lot of room for improvement on the performance side, and it should be possible to get the performance even faster than for Qoi, at least for the fast profile.
 
