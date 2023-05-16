@@ -1,6 +1,6 @@
 +++
 title = "Koi, the kinda okay image format"
-description = "Creating a new image format to learn about image compression and some notes on performance optimization"
+description = "Creating a new lossless image format to learn about image compression and some notes on performance optimization"
 date = 2023-04-02
 updated = 2023-05-15
 
@@ -24,19 +24,21 @@ To start, let's look at how the file format is structured.
 To identify the file format, the first 8 bytes must be `KOI \xF0\x9F\x99\x82`. Following that is a header with metadata about the image. The header is a series of key-value pairs, encoded using Binary JSON (BSON). The following keys are supported:
 
 - `v` (version): The file format version
-- `w` (width): The image width in pixels. Must be greater than zero.
-- `h` (height): The image height in pixels. Must be greater than zero.
+- `w` (width): The image width in pixels. Must be greater than zero. (unsigned 64-bit integer)
+- `h` (height): The image height in pixels. Must be greater than zero. (unsigned 64-bit integer)
 - `c` (channels): The number of channels. Must be `1`, `2`, `3` or `4`.
 - `x` (compression): The compression algorithm. Must be `0` (none) or `1` (LZ4).
-
-There's also two optional keys:
+- `s` (color space): The color space. Must be `0` (sRGB with linear alpha), `1` (all channels linear)
+  There's also two optional keys:
 
 - `e` (exif): The EXIF data as a byte array.
-- `b` (block size):
+- `b` (block size): The size of blocks, smaller blocks allow for parallel processing, larger blocks allow for better compression. Used by the encoder for the maximum size of uncompressed blocks. Can be up to 199992 bytes. (unsigned 32-bit integer)
 
 The header is followed by a series of blocks, each of which is a chunk of compressed image data. Each block is prefixed with a small header that contains the length of the block and the number of pixels it contains. These are stored as 4-byte unsigned integers, encoded in little endian order.
 
-Koi supports 1-4 channels (grayscale, rgba, and both with alpha) and stores 8 bits per channel. The image data is stored as a series of chunks, each of which is one to five bytes long and only corresponds to a single pixel. This is a pretty big departure from most image formats, which store data in blocks of 4x4 or 8x8 pixels. The reason for this is that it allows for very fast decoding, since the decoder only needs to keep track of the last pixel value. Initially, koi also had support for run-length encoding and a cache of recently used pixel values, but I removed those features because they didn't improve the compression ratio in my benchmark suite and made decoding and encoding a lot slower.
+Koi supports 1-4 channels (grayscale, rgba, and both with alpha) and stores 8 bits per channel.
+
+The image data is stored as a series of chunks, each of which is one to five bytes long and only corresponds to a single pixel. This is a pretty big departure from most image formats, which store data in blocks of 4x4 or 8x8 pixels. The reason for this is that it allows for very fast decoding, since the decoder only needs to keep track of the last pixel value. Initially, koi also had support for run-length encoding and a cache of recently used pixel values, but I removed those features because they didn't improve the compression ratio in my benchmark suite and made decoding and encoding a lot slower.
 
 The following chunk types are currently supported, with space for more in the future:
 
@@ -184,7 +186,9 @@ The following chunk types are currently supported, with space for more in the fu
 
 While developing the format, I also experimented with a few other chunk types, but more often than not they ended up being less compressible and slower to decode than the ones listed above.
 
-These chunks are compressed using [lz4](https://lz4.github.io/lz4/), which is, while not the most efficient compression algorithm, very fast to decode and encode. The last frame is followed by 4 zero bytes to indicate the end of the stream.
+These chunks are compressed using [lz4](https://lz4.github.io/lz4/), which is, while not the most efficient compression algorithm, very fast to decode and encode. When encoding, the reference implementation allows choosing between `lz4-flex`, a pure rust implementation, and `lz4`/`lz4-hc`, which are bindings to the C implementation and specify the compression level. When decoding, the reference implementation uses `lz4-flex`, since it is faster than the C implementation in my benchmarks.
+
+The last block is followed by 4 zero bytes to indicate the end of the stream, so block sizes are not allowed to be 0.
 
 # Performance
 
@@ -202,7 +206,6 @@ To compare the performance of koi to other image formats, I wrote a simple bench
 │ KoiFast │   7.80s │   4.11s │  0.28 │
 │ Qoi     │   4.65s │   3.39s │  0.28 │
 └─────────┴─────────┴─────────┴───────┘
-
 ```
 
 When looking at the overall benchmark results, Koi sits somewhere in the middle between the different png profiles. Koi actually outperforms the other formats in a lot of categories, except
@@ -221,7 +224,6 @@ Koi's worst results
 │ KoiFast │  1246ms │   675ms │  0.62 │
 │ Qoi     │   829ms │   630ms │  0.60 │
 └─────────┴─────────┴─────────┴───────┘
-
 ```
 
 The best case scenario for Koi is with images with a lot of transparency and grey colors, like in the icon_512 suite:
@@ -255,6 +257,12 @@ And for screenshots, Koi can also hold its own:
 │ Qoi     │   209ms │   146ms │  0.08 │
 └─────────┴─────────┴─────────┴───────┘
 ```
+
+# Safety
+
+I'm assuming untrustworthy input, so the decoder is written in a way that it can't panic or cause undefined behavior. All inputs are checked for a maximum size, so the decoder can't be tricked into allocating a huge amount of memory.
+
+There are a few places where I use `unsafe` code, due to some rust features still being unstable, but I'm trying to keep it to a minimum.
 
 # Performance optimizations
 
@@ -296,5 +304,7 @@ A different case where the Rust compiler was able to optimize the code very well
 # Conclusion
 
 Creating a new image format is actually a lot of fun, and It's totally possible to create something that works well for special use cases like icons or game assets. I'm happy with the results so far and as a next step I want to add Rust `no_std` support so I can use it in the kernel project I'm working on to test displaying images on the screen.
+
+Some other things I want to look into is adding support for more color spaces, like YCbCr and CMYK, and maybe even support for animation. I also want to look into adding support for more compression algorithms, like LZ4 or Zstd, and maybe even support for lossy compression. Also, I'm not happy with BSON as a metadata format, so I want to look into using something like [MessagePack](https://msgpack.org/index.html) instead. And lastly, there's still a lot of room for improvement on the performance side, and it should be possible to get the performance even faster than for Qoi, at least for the fast profile.
 
 The source code for the encoder, decoder and benchmark is available on [GitHub](https://github.com/explodingcamera/koi-rs) and licensed under the ISC license.
