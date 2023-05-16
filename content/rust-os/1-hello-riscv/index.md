@@ -129,7 +129,9 @@ SBI (Supervisor Binary Interface) is a standard interface for interacting with t
 
 The version shipping with QEMU uses a Jump Address ([_FW_JUMP_](https://github.com/riscv-software-src/opensbi/blob/master/docs/firmware/fw_jump.md)), in this case, `0x80200000`, which is where we'll be putting our kernel. QEMU will load our kernel into memory and jump to `0x80000000`, from where OpenSBI will then jump to `0x80200000`, where our kernel is located.
 
-{{ figure(caption = "RISC-V Boot Flow", position="center", src="./assets/boot.svg") }}
+{{ figure(caption = "Traditional Boot Flow", position="center", src="./assets/boot1.svg") }}
+
+{{ figure(caption = "QEMU RISC-V Boot Flow", position="center", src="./assets/boot.svg") }}
 
 This architecture has a lot of benefits: SBI puts an abstraction layer between the kernel and the hardware, which allows us to write a single kernel that can run on any RISC-V CPU, regardless of the extensions it supports, as long as it has an SBI implementation. SBI also provides many functions like printing to and reading from the console, and it loads a flattened device tree (FDT) into memory, which we'll also be using later on to get information about the hardware.
 

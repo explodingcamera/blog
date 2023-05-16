@@ -3,12 +3,17 @@ transparent = true
 title = "Creating a Kernel in Rust #2: Shell"
 description = "Creating a simple shell for our kernel to run commands and help us debug"
 date = 2023-05-14
-draft = true
 
 [taxonomies]
 tags = ["rust", "riscv", "kernel"]
 series = ["rust-os"]
 +++
+
+{% quote (class="info")%}
+
+This is a series of posts about my journey creating a kernel in rust. You can find the code for this project [here](https://github.com/explodingcamera/pogos/tree/part-1) and all of the posts in this series [here](/series/os-dev/).
+
+{% end %}
 
 Now that we have a basic kernel that can print to the screen, we can start building out some more functionality.
 The first thing I want to do is create a simple shell that will allow us to run some commands and more easily interact with our system.
@@ -33,20 +38,29 @@ First, we'll create a new file `src/linear-allocator.rs` and will create the bas
 
 use core::sync::atomic::{AtomicUsize};
 
-pub struct LinearAllocator<const T: usize> {
+pub struct LinearAllocator {
     head: AtomicUsize, // the current index of the buffer
     // AtomicUsize is a special type that allows us to safely share data
     // between threads without using locks
 
-    memory: [u8; T], // our in-memory "arena"
+    start: *mut u8, // raw pointer to the start of the heap
+    end: *mut u8,   // raw pointer to the end of the heap
 }
-
 // allow our allocator to be shared between threads
 unsafe impl Sync for LinearAllocator {}
 
 impl LinearAllocator {
-    pub fn init(buffer: &'static mut [u8]) -> Self {
-        Self { head: AtomicUsize::new(0), memory }
+    pub const fn empty() -> Self {
+        Self {
+            head: AtomicUsize::new(0),
+            start: core::ptr::null_mut(),
+            end: core::ptr::null_mut(),
+        }
+    }
+
+    pub fn init(&mut self, start: usize, size: usize) {
+        self.start = start as *mut u8;
+        self.end = unsafe { self.start.add(size) };
     }
 }
 ```
@@ -60,8 +74,8 @@ use core::alloc::{GlobalAlloc, Layout};
 use core::ptr::NonNull;
 use core::sync::atomic::{Ordering};
 
-unsafe impl<const T: usize> GlobalAlloc for LinearAllocator<T> {
-    unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
+unsafe impl GlobalAlloc for LinearAllocator {
+        unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
         /* The byte multiple that our allocated memory must start at
           most hardware architectures perform better when reading/writing
           data at aligned addresses (e.g. 4 bytes, 8 bytes, etc.) so we
