@@ -1,6 +1,6 @@
 +++
 transparent = true
-title = "Creating a Kernel in Rust #2: Shell"
+title = "Creating a Kernel in Rust #2: Shell [Work in Progress]"
 description = "Creating a simple shell for our kernel to run commands and help us debug"
 date = 2023-05-14
 
@@ -12,6 +12,8 @@ series = ["rust-os"]
 {% quote (class="info")%}
 
 This is a series of posts about my journey creating a kernel in rust. You can find the code for this project [here](https://github.com/explodingcamera/pogos/tree/part-1) and all of the posts in this series [here](/series/os-dev/).
+
+This post isn't finished yet, but I wanted to get it out so I stop procrastinating on it. More content will follow next week.
 
 {% end %}
 
@@ -117,6 +119,7 @@ Now that we have our allocator, we can use it to allocate memory in our kernel. 
 {{ file(name = "src/heap.rs") }}
 
 ```rust
+
 #[global_allocator]
 static mut KERNEL_HEAP_ALLOCATOR: LinearAllocator = LinearAllocator::empty();
 static mut KERNEL_HEAP: [u8; 0x20000] = [0; 0x20000]; // this will allocate 128kb of memory in the .bss section
