@@ -13,7 +13,7 @@ series = ["rust-os"]
 
 {% quote (class="info")%}
 
-This is a series of posts about my journey creating a kernel in rust. You can find the code for this project [here](https://github.com/explodingcamera/pogos/tree/part-1) and all of the posts in this series [here](/series/os-dev/).
+This is a series of posts about my journey creating a kernel in rust. You can find the code for this project [here](https://github.com/explodingcamera/pogos/tree/part-1) and all of the posts in this series [here](/series/rust-os/).
 
 {% end %}
 
