@@ -202,7 +202,7 @@ pub const BACKSPACE: u8 = 127;
 pub fn shell() {
     print!("> ");
 
-    let mut command = String::new(); // finnaly, we can use heap allocated strings!
+    let mut command = String::new(); // finally, we can use heap allocated strings!
 
     loop {
         match sbi::legacy::console_getchar() {
