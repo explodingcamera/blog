@@ -5,9 +5,9 @@ li>div.year-pad {
 }
 
 li>div.year {
-  // a small border to make the year stand out
   position: absolute;
-  z-index: 0;
+  z-index: -1;
+  user-select: none;
   top: .4rem;
   left: -2rem;
 
