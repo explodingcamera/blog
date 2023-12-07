@@ -23,53 +23,38 @@
 </head>
 
 <body>
+    {% block header %}
+    <header class="header">
+        <ul>
+            <li class="active">
+                <a href="{{ config.base_url | safe }}">Blog</a>
+            </li>
+            <li>
+                <a href="https://henrygressmann.de">Website</a>
+            </li>
+        </ul> 
+    </header>
+    {% endblock header %}
     <div class="container" data-spaify-main>
-        {% block header %}
-        <header class="header">
-            <div class="header__inner">
-                <div class="header__logo">
-                    {%- if config.logo_home_link %}
-                    {% set logo_link = config.logo_home_link %}
-                    {% else %}
-                    {% set logo_link = config.base_url %}
-                    {% endif -%}
-                    <a href="{{ logo_link | safe }}" style="text-decoration: none;">
-                        <div class="logo">
-                            {% block logo_content %}
-                            {%- if config.extra.logo_text %}
-                            {{ config.extra.logo_text }}
-                            {% else %}
-                            Terminimal theme
-                            {% endif -%}
-                            {% endblock logo_content %}
-                        </div>
-                    </a>
-                </div>
-            </div>
-        </header>
-        {% endblock header %}
 
 
         <div class="content">
             {% block content %}
             <div class="post">
 
-                <br />
-                <br />
-
-                <!-- blog description -->
+                {# <!-- blog description -->
                 Hello there! Welcome to my blog, a simple nook in the vast digital landscape where I share my
                 thoughts and experiences with programming, everything open source and operating systems. Enjoy your stay
                 and happy
                 coding!
                 <br />
-                <br />
+                <br /> #}
+                <br>
 
 
                 {% set section = get_section(path="_index.md") %}
 
-                <br />
-                <h2>Newest Posts</h2>
+                {# <h2>Newest Posts</h2> #}
                 {{ post_macros::list_posts(pages=section.pages) }}
             </div>
             {% endblock content %}
@@ -83,7 +68,7 @@
                     <a href="/series">series</a>
                     <a data-spaify-ignore href="/atom.xml">rss</a>
                     <a href="https://henrygressmann.de/impressum">impressum</a>
-                    <a href="https://henrygressmann.de">henrygressmann.de</a>
+                    {# <a href="https://henrygressmann.de">henrygressmann.de</a> #}
                 </div>
             </div>
         </footer>

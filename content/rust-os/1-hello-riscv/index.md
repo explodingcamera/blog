@@ -26,7 +26,7 @@ This series requires pre-requisite knowledge of Rust or a similar programming la
 
 To follow along, I've also created a [GitHub Repo](https://github.com/explodingcamera/pogos) with a branch for each part of the series. You can find the code for this part [here](https://github.com/explodingcamera/pogos/tree/part-1).
 
-{{toc}}
+<!-- {{toc}} -->
 
 # CPU Architectures and RISC-V
 

@@ -1,32 +1,27 @@
-base_url = "https://blog.henrygressmann.de"
-build_search_index = true
-compile_sass = true
-description = "a blog about software development, technology and other stuff"
-generate_feed = true
+base_url="https://blog.henrygressmann.de"
+build_search_index=true
+compile_sass=true
+description="a blog about software development, technology and other stuff"
+generate_feed=true
 
-taxonomies = [
-  {name = "tags"},
-  {name = "series", feed = true},
-]
+taxonomies=[{name="tags"}, {name="series", feed=true}]
 
-title = "henry's blog"
+title="henry's blog"
 
 [markdown]
-extra_syntaxes_and_themes = ["highlight_themes", "syntaxes"]
-highlight_code = true
-highlight_theme = "dracula"
+extra_syntaxes_and_themes=["highlight_themes", "syntaxes"]
+highlight_code=true
+highlight_theme="dracula"
 
 [extra]
-accent_color = "blue"
-background_color = "green"
-
-logo_text = "henry's blog"
+accent_color="blue"
+background_color="green"
 
 # Whether to show links to earlier and later posts
 # on each post page (defaults to true).
-enable_post_view_navigation = true
+enable_post_view_navigation=true
 
 # The text shown at the bottom of a post,
 # before earlier/later post links.
 # Defaults to "Thanks for reading! Read other posts?"
-post_view_navigation_prompt = "Thanks for reading! Read other posts?"
+post_view_navigation_prompt="Thanks for reading! Read other posts?"

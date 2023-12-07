@@ -20,7 +20,7 @@ The first thing I want to do is create a simple shell that will allow us to run 
 
 Like I mentioned in the previous post, we can't yet use heap allocated data structures, so we'll start with implementing a Global Allocator. This will allow us to use APIs like `Box` and `Vec` anywhere in our kernel which will make our lives much easier.
 
-{{toc}}
+<!-- {{toc}} -->
 
 # Memory Allocators
 

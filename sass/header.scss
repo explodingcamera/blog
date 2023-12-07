@@ -13,87 +13,26 @@
 }
 
 .header {
-  display: flex;
-  flex-direction: column;
-  position: relative;
+  height: 4rem;
 
-  &__inner {
+  ul {
+    list-style: none;
     display: flex;
-    align-items: center;
-    justify-content: space-between;
-  }
+    gap: .5rem;
 
-  &__logo {
-    display: flex;
-    flex: 1;
-    // margin: 0 20px;
+    li {
+      color: var(--color);
+      font-size: 2rem;
+      opacity: .3;
+      transition: opacity 0.2s ease-in-out;
 
-    display: flex;
-    // justify-content: center;
-
-    // &:after {
-    //   content: '';
-    //   background: repeating-linear-gradient(90deg, var(--accent), var(--accent) 2px, transparent 0, transparent 16px);
-    //   display: block;
-    //   width: 100%;
-    //   right: 10px;
-    // }
-
-    a {
-      flex: 0 0 auto;
-      max-width: 100%;
-    }
-  }
-
-  .menu {
-    margin: 20px 0;
-
-    &__inner {
-      display: flex;
-      flex-wrap: wrap;
-      list-style: none;
-      margin: 0;
-      padding: 0;
-
-      li {
-        &.active {
-          color: var(--accent-alpha-70);
-        }
-
-        &:not(:last-of-type) {
-          margin-right: 20px;
-          margin-bottom: 10px;
-          flex: 0 0 auto;
-        }
-      }
-    }
-
-    &__sub-inner {
-      position: relative;
-      list-style: none;
-      padding: 0;
-      margin: 0;
-
-      &:not(:only-child) {
-        margin-left: 20px;
+      a {
+        text-decoration: none;
       }
 
-      &-more {
-        @include menu;
-        top: 35px;
-        left: 0;
-
-        &-trigger {
-          color: var(--accent);
-          user-select: none;
-          cursor: pointer;
-        }
-
-        li {
-          margin: 0;
-          padding: 5px;
-          white-space: nowrap;
-        }
+      &:hover,
+      &.active {
+        opacity: 0.6;
       }
     }
   }

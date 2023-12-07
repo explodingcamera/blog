@@ -1,5 +1,25 @@
 @import "variables";
 
+li>div.year-pad {
+  height: 4rem;
+}
+
+li>div.year {
+  // a small border to make the year stand out
+  position: absolute;
+  z-index: 0;
+  top: .4rem;
+  left: -2rem;
+
+  h2 {
+    font-size: 6rem;
+    margin: 0;
+    color: var(--background);
+    opacity: 0.3;
+    -webkit-text-stroke: 1px var(--color);
+  }
+}
+
 .posts {
   width: 100%;
   margin: 0 auto;
@@ -20,24 +40,8 @@ ul.toc {
 .post {
   width: 100%;
   text-align: left;
-  // margin: 20px 20px;
   padding: 20px 0;
 
-  .interview {
-    p {
-      margin: 0;
-      margin-bottom: 0.5rem;
-    }
-    blockquote {
-      background: linear-gradient(12deg, #6d07ff, #15b154e3);
-      margin: 0;
-      margin-bottom: 2rem;
-      p {
-        margin: 0;
-        padding: 0 0.5rem;
-      }
-    }
-  }
 
   // @media (max-width: $tablet-max-width) {
   //   max-width: 660px;
@@ -119,15 +123,8 @@ ul.toc {
   ul {
     list-style: none;
 
-    > li:before {
-      content: "*";
-      position: absolute;
-      left: -20px;
-      top: 2px;
-      color: var(--accent);
-    }
 
-    > li > ul {
+    >li>ul {
       margin-bottom: 0.5rem;
     }
   }
@@ -136,28 +133,12 @@ ul.toc {
     padding-top: 0.5rem;
     padding-left: 0.5rem;
 
-    > li {
+    >li {
       margin-bottom: 0.8rem;
     }
 
-    > li > ol {
+    >li>ol {
       margin-bottom: 0.5rem;
-    }
-  }
-}
-
-.post--regulation {
-  h1 {
-    justify-content: center;
-  }
-
-  h2 {
-    justify-content: center;
-    margin-bottom: 10px;
-
-    & + h2 {
-      margin-top: -10px;
-      margin-bottom: 20px;
     }
   }
 }
@@ -165,21 +146,20 @@ ul.toc {
 .post-list {
   margin: 0;
 
-  > li {
+  >li {
+    position: relative;
     margin-bottom: 0.7rem;
-    &::before {
-      content: "" !important;
-    }
-
     transition: all 0.2s ease-in-out;
 
     &:hover {
       .post-date {
         opacity: 0.9;
       }
+
       .post-list-title {
         opacity: 1;
       }
+
       .post-list-description {
         opacity: 1;
       }
