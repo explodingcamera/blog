@@ -3,6 +3,7 @@ title = "Koi, the kinda okay image format"
 description = "Creating a new lossless image format to learn about image compression and some notes on performance optimization"
 date = 2023-04-02
 updated = 2023-05-15
+aliases = ["koi"]
 
 [taxonomies]
 tags = ["koi", "image"]

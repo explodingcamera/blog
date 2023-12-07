@@ -60,20 +60,20 @@
             {% endblock content %}
         </div>
 
-        {% block footer %}
-        <footer class="footer">
-            <div class="footer__inner">
-                <div class="copyright copyright--user">
-                    <a href="/tags">tags</a>
-                    <a href="/series">series</a>
-                    <a data-spaify-ignore href="/atom.xml">rss</a>
-                    <a href="https://henrygressmann.de/impressum">impressum</a>
-                    {# <a href="https://henrygressmann.de">henrygressmann.de</a> #}
-                </div>
-            </div>
-        </footer>
-        {% endblock footer %}
     </div>
+    {% block footer %}
+    <footer class="footer">
+        <div class="footer__inner">
+            <div class="copyright copyright--user">
+                <a href="/tags">tags</a>
+                <a href="/series">series</a>
+                <a data-spaify-ignore href="/atom.xml">rss</a>
+                <a href="https://henrygressmann.de/impressum">impressum</a>
+                {# <a href="https://henrygressmann.de">henrygressmann.de</a> #}
+            </div>
+        </div>
+    </footer>
+    {% endblock footer %}
 
     <script type="module" src="{{ get_url(path='index.js', cachebust=true) | safe}}"></script>
     <script defer data-domain="blog.henrygressmann.de" src="https://a.explodingcamera.com/js/script.js"></script>

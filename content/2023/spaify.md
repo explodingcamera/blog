@@ -2,6 +2,7 @@
 title = "Introducing Spaify - Seamless page transitions for your static site"
 description = "A new npm package to add seamless page transitions to your static site, with less than 1kb of JavaScript"
 date = 2023-05-14
+aliases = ["spaify"]
 
 [taxonomies]
 tags = ["npm", "typescript", "open source", "javascript", "spa", "static site", "web development"]

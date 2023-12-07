@@ -118,7 +118,7 @@
         <a href="{{ page.permalink | safe }}">
             <span class="post-date">
                 {%- if page.draft %}
-                <span class="post-draft">Draft&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</span>
+                <span class="post-draft">Draft&nbsp;&nbsp;</span>
                 {% else %}
                 {{ page.date | date(format="%h %d") }}
                 {% endif -%}
