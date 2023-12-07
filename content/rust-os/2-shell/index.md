@@ -1,6 +1,6 @@
 +++
 transparent = true
-title = "Creating a Kernel in Rust #2: Shell"
+title = "Operating Systems in Rust #2: Shell"
 description = "Creating a simple shell for our kernel to run commands and help us debug"
 date = 2023-07-08
 

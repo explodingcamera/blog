@@ -1,12 +1,16 @@
 @import "variables";
 
 .footer {
-  margin-left: 45px;
   position: absolute;
   display: flex;
   bottom: 0;
-  padding: 40px 0;
+  padding: 2rem 2rem;
   flex-grow: 0;
+  width: 100%;
+
+  @media (max-width: $phone-max-width) {
+    justify-content: center;
+  }
 
   &__inner {
     display: flex;

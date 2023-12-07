@@ -2,21 +2,36 @@
 
 li>div.year-pad {
   height: 4rem;
+
+  @media (max-width: $phone-max-width) {
+    height: 4.5rem;
+  }
 }
 
 li>div.year {
   position: absolute;
   z-index: -1;
   user-select: none;
-  top: .4rem;
+  top: 0.9rem;
   left: -2rem;
 
   h2 {
+    line-height: 1;
     font-size: 6rem;
     margin: 0;
     color: var(--background);
     opacity: 0.3;
     -webkit-text-stroke: 1px var(--color);
+  }
+
+
+  @media (max-width: $phone-max-width) {
+    top: 0rem;
+    left: 0rem;
+
+    h2 {
+      font-size: 4rem;
+    }
   }
 }
 
