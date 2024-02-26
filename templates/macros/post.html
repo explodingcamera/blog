@@ -107,13 +107,13 @@
     {% set year = "-1" %}
     {%- for page in pages %}
     {% set this_year = page.date | date(format="%Y") %}
+    
+    {% if year != this_year %}
+    {% set_global year = this_year %}
+    <div class="year">
+        <h2>{{ year }}</h2>
+    </div>
     <li>
-        {% if year != this_year %}
-        {% set_global year = this_year %}
-        <div class="year-pad"></div>
-        <div class="year">
-            <h2>{{ year }}</h2>
-        </div>
         {% endif %}
         <a href="{{ page.permalink | safe }}">
             <span class="post-date">

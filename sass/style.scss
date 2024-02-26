@@ -1,16 +1,16 @@
 @import "fonts";
 
 :root {
-  --accent: #2afff1;
-  --accent-alpha-70: #2afff1ab;
-  --accent-alpha-20: #2afff136;
+  --accent: #fcfcfc;
+  --accent-alpha-70: #fcfcfcab;
+  --accent-alpha-20: #fcfcfc36;
 
-  --background: #030507;
+  --background: #101010;
   --color: white;
   --border-color: rgba(255, 255, 255, 0.1);
 
   --font-family-mono: "JetBrains Mono", monospace;
-  --font-family-text: "Source Sans Pro", Georgia, Cambria, "Times New Roman",
+  --font-family-text: "Linux Libertine", Georgia, Cambria, "Times New Roman",
     Times, serif;
 }
 
