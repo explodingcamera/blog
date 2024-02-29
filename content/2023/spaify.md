@@ -5,7 +5,7 @@ date = 2023-05-14
 aliases = ["spaify"]
 
 [taxonomies]
-tags = ["npm", "typescript", "open source", "javascript", "spa", "static site", "web development"]
+tags = ["typescript", "open source", "webdev"]
 +++
 
 By default, when you click a link on a website, the browser will load the new page from the server and replace the current page with the new one. This is the default behaviour for static sites, and it works well. Spaify lets you skip this step and load the new page in the background, so that when you click a link, the new page is already loaded and ready to be displayed. This makes the page transition seamless, and it's a great way to improve the user experience of your site, and progressively enhance it. And the best part is that it's super easy to use, and it's less than 1kb of JavaScript (minified and gzipped).

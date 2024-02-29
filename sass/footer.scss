@@ -4,7 +4,7 @@
   position: absolute;
   display: flex;
   bottom: 0;
-  padding: 2rem 2rem;
+  padding: 2rem 2.4rem;
   flex-grow: 0;
   width: 100%;
 
@@ -28,7 +28,7 @@
     display: flex;
     flex-direction: row;
     align-items: center;
-    font-size: 1rem;
+    font-size: 1.1em;
     color: var(--light-color-secondary);
 
     &--user {
