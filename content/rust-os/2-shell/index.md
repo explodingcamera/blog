@@ -1,8 +1,9 @@
 +++
 transparent = true
 title = "Operating Systems in Rust #2: Shell"
-description = "Creating a simple shell for our kernel to run commands and help us debug"
+description = "Continuing with the kernel we started in the previous post, we'll add a simple shell and a global allocator to use heap allocated data structures."
 date = 2023-07-08
+updated = 2024-03-01 
 
 [taxonomies]
 tags = ["rust", "riscv", "kernel"]
@@ -46,10 +47,12 @@ pub struct LinearAllocator {
     start: *mut u8, // raw pointer to the start of the heap
     end: *mut u8,   // raw pointer to the end of the heap
 }
+
 // allow our allocator to be shared between threads
 unsafe impl Sync for LinearAllocator {}
 
 impl LinearAllocator {
+    // create a new, empty allocator
     pub const fn empty() -> Self {
         Self {
             head: AtomicUsize::new(0),
@@ -58,6 +61,9 @@ impl LinearAllocator {
         }
     }
 
+    // initialize the allocator with a pre-allocated buffer of memory
+    // - start is a raw pointer to the start of the buffer
+    // - size is the length of the buffer
     pub fn init(&mut self, start: usize, size: usize) {
         self.start = start as *mut u8;
         self.end = unsafe { self.start.add(size) };
@@ -114,7 +120,7 @@ unsafe impl GlobalAlloc for LinearAllocator {
 }
 ```
 
-Before we can start using our allocator, we need to initialize it and allocate some memory for it to use. We'll do this in our `src/heap.rs` file:
+Before we can start using our allocator, we need to give it a region of memory use. We'll do this in our `src/heap.rs` file:
 
 {{ file(name = "src/heap.rs") }}
 
@@ -122,7 +128,9 @@ Before we can start using our allocator, we need to initialize it and allocate s
 
 #[global_allocator]
 static mut KERNEL_HEAP_ALLOCATOR: LinearAllocator = LinearAllocator::empty();
-static mut KERNEL_HEAP: [u8; 0x20000] = [0; 0x20000]; // this will allocate 128kb of memory in the .bss section
+
+// this will allocate 128kb of memory in the .bss section
+static mut KERNEL_HEAP: [u8; 0x20000] = [0; 0x20000];
 
 /// Initialize the heap allocator.
 pub unsafe fn init_kernel_heap() {
@@ -130,7 +138,6 @@ pub unsafe fn init_kernel_heap() {
   let heap_size = KERNEL_HEAP.len();
   KERNEL_HEAP_ALLOCATOR.init(heap_start, heap_size);
 }
-
 ```
 
 {{ file(name = "src/main.rs") }}
@@ -156,7 +163,7 @@ mod heap; // new
 
 #[entry]
 fn main(a0: usize) -> ! {
-    println!("Hello world from hart {}\n", a0);
+    println!("Hello world from hart {}!\n", a0);
 
     // Setup everything required for the kernel to run
     unsafe {
@@ -184,12 +191,11 @@ println!("{:?}", v);
 // [1, 2, 3]
 ```
 
-This is great, but we can't really do much with this allocator since we can't free memory. Alternative allocators are, for example, [linked list allocators](https://os.phil-opp.com/allocator-designs/#linked-list-allocator), [binary buddy allocators](https://www.kernel.org/doc/gorman/html/understand/understand009.html), and [slab allocators](https://www.kernel.org/doc/gorman/html/understand/understand011.html). We won't be implementing any of these in here, but I encourage you to read about them and try to implement them yourself! Some of these are also available as crates on crates.io to use them as drop-in replacements for our naive implementation here ([linked_list_allocator](https://crates.io/crates/linked-list-allocator), [buddy_system_allocator](https://crates.io/crates/buddy_system_allocator) and [slabmalloc](https://crates.io/crates/slabmalloc)).
+This is great, but we can't really do much with this allocator since we can't free memory. Alternative allocation strategies are, for example, [linked list allocators](https://os.phil-opp.com/allocator-designs/#linked-list-allocator), [binary buddy allocators](https://www.kernel.org/doc/gorman/html/understand/understand009.html), and [slab allocators](https://www.kernel.org/doc/gorman/html/understand/understand011.html). We won't be implementing any of these in here, but I encourage you to read about them and try to implement them yourself! Some of these are also available as crates on crates.io to use them as drop-in replacements for our naive implementation here ([linked_list_allocator](https://crates.io/crates/linked-list-allocator), [buddy_system_allocator](https://crates.io/crates/buddy_system_allocator) and [slabmalloc](https://crates.io/crates/slabmalloc)).
 
 # Shell
 
-With most essential rust features available, we can now start working on our shell. This shell will allow us to interact with our kernel and inspect its state.
-
+With most essential rust features available, we can now start building our shell. This shell will allow us to interact with our kernel and inspect its state.
 The shell will be a simple loop for now, that reads characters from SBIs `console_getchar` function, and executes some basic commands.
 
 {{ file(name = "src/main.rs") }}
@@ -202,7 +208,7 @@ pub const BACKSPACE: u8 = 127;
 pub fn shell() {
     print!("> ");
 
-    let mut command = String::new(); // finally, we can use heap allocated strings!
+    let mut command = String::new(); // heap allocated strings!
 
     loop {
         match sbi::legacy::console_getchar() {
@@ -222,7 +228,6 @@ pub fn shell() {
     }
 }
 
-
 fn process_command(command: &str) {
     match command {
         "help" | "?" | "h" => {
@@ -240,6 +245,8 @@ fn process_command(command: &str) {
 
 ```
 
+Now, when we run our kernel, we'll be greeted with a prompt, and we can type in commands like `help` and `shutdown` to see the available commands and shutdown the machine.
+
 ```
 > help
 available commands:
@@ -250,12 +257,11 @@ available commands:
 
 ## Debugging
 
-Being able to shutdown the machine is great and all, but let's add some more functionality. We'll start by adding some commands to trigger different exceptions, so we can test our exception handler from the previous chapter.
+Being able to shutdown the machine is great and all, but let's add some more functionality. We'll start by adding commands to trigger different exceptions, so we can test our exception handler from the previous chapter.
 
 {{ file(name = "src/main.rs") }}
 
 ```rust
-
     match command {
         // ...
         "pagefault" => {
@@ -280,9 +286,9 @@ Trap frame: TrapFrame { ra: 2149605116, t0: 9, t1: 2149632682, t2: 22, t3: 5760,
 panicked at 'Exception cause: Exception(Breakpoint)', kernel/src/trap.rs:33:5
 ```
 
-This is great, we can now see the trap frame and the exception cause, so we can start debugging our kernel! To make use of this, you can also use an external debugger like [gdb](https://www.gnu.org/software/gdb/), which allows you to set breakpoints, inspect memory, step through code, and much more.
-Setting up gdb is a bit more involved, so if you run into issues check out this [guide](https://os.phil-opp.com/set-up-gdb/). I'm more of a print-debugging and hit my head against the wall until it works kind of guy, so I won't be covering this in detail here.
+This is great, we can now see the trap frame and the exception cause, so we can start debugging our kernel. To make use of this, you can also use an external debugger like [gdb](https://www.gnu.org/software/gdb/), which allows you to set breakpoints, inspect memory, step through code, and much more.
+Setting up gdb is a bit more involved, so if you run into issues check out this [guide](https://os.phil-opp.com/set-up-gdb/).
 
 There's a lot of improvements we can make to this shell, for some ideas, check out my `simple_shell` crate on [crates.io](https://crates.io/crates/simple_shell). I recommend you try to implement some of these yourself, as it's a fun exercise. Something that might be helpful is this ANSI escape code [cheat sheet](https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797) for processing user input like arrow keys, backspace, etc.
 
-After this fairly short chapter, we'll add multi-tasking to our kernel using async rust, so we can run multiple programs at the same time and explore paging and virtual memory.
+After this fairly short chapter, we'll add multi-tasking to our kernel using async rust, so we can run multiple programs at the same time.
