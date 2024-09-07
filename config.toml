@@ -2,7 +2,7 @@ base_url="https://blog.henrygressmann.de"
 build_search_index=true
 compile_sass=true
 description="a blog about software development, technology and other stuff"
-generate_feed=true
+generate_feeds=true
 
 taxonomies=[{name="tags"}, {name="series", feed=true}]
 
