@@ -3,7 +3,10 @@
     {% if link %}
     <a href="{{ link | safe }}" target="_blank">
     {% endif %}
-      <img src="{{ src | safe }}"{% if alt %} alt="{{ alt }}"{% endif %}{% if style %} style="{{ style }}"{% endif %} />
+    
+    {% set data = load_data(path=src, format="plain") %}
+    {{ data | safe }}
+    
     {% if link %}
     </a>
     {% endif %}

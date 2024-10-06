@@ -1,21 +1,22 @@
-@import "fonts";
+@import "fonts/libertinus.scss";
+@import "fonts/jetbrainsmono.scss";
+@import "fonts/shantell.scss";
 
 :root {
   --accent: #fcfcfc;
   --accent-alpha-70: #fcfcfcab;
   --accent-alpha-20: #fcfcfc36;
 
-  --background: #101010;
+  --background: #080809;
   --color: white;
   --border-color: rgba(255, 255, 255, 0.1);
 
   --font-family-mono: "JetBrains Mono", monospace;
-  --font-family-text: "Linux Libertine", Georgia, Cambria, "Times New Roman",
+  --font-family-text: "Libertinus Serif", Georgia, Cambria, "Times New Roman",
     Times, serif;
 }
 
 @import "buttons";
-
 @import "header";
 @import "logo";
 @import "main";

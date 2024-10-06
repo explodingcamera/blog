@@ -1,6 +1,5 @@
 @import "variables";
 
-
 .post-list > div.year {
   user-select: none;
 
@@ -10,9 +9,12 @@
     padding-bottom: 0.5rem;
     font-size: 2rem;
     margin: 0;
-    opacity: 0.5;
     line-height: 0.8;
-    font-family: "Linux Libertine Display";
+    font-weight: 600;
+  }
+
+  &:not(:first-of-type) h2 {
+    margin-top: 2rem;
   }
 }
 
@@ -31,6 +33,7 @@
 
 ul.toc {
   margin-top: 0;
+  margin-bottom: 0;
 }
 
 .post {
@@ -70,7 +73,6 @@ ul.toc {
 
   &-title {
     position: relative;
-    font-size: 1.7rem;
     margin: 0;
     margin-bottom: 0.5rem;
     font-weight: 600;
@@ -94,7 +96,7 @@ ul.toc {
   &-tags-inline {
     @extend %tags;
     display: block;
-  
+
     > a {
       opacity: 0.7;
       &:hover {
@@ -126,8 +128,7 @@ ul.toc {
   ul {
     list-style: none;
 
-
-    >li>ul {
+    > li > ul {
       margin-bottom: 0.5rem;
     }
   }
@@ -136,11 +137,11 @@ ul.toc {
     padding-top: 0.5rem;
     padding-left: 0.5rem;
 
-    >li {
+    > li {
       margin-bottom: 0.8rem;
     }
 
-    >li>ol {
+    > li > ol {
       margin-bottom: 0.5rem;
     }
   }
@@ -149,7 +150,7 @@ ul.toc {
 .post-list {
   margin: 0;
 
-  >li {
+  > li {
     position: relative;
     margin-bottom: 0.7rem;
     transition: all 0.2s ease-in-out;
@@ -173,8 +174,10 @@ ul.toc {
     color: #cecece;
     opacity: 0.7;
     text-decoration: none;
-    margin-right: 0.5rem;
-    font-weight: 200;
+    margin-left: 0.5rem;
+    font-weight: 600;
+    font-size: 1rem;
+    font-variant: small-caps;
   }
 
   a {
@@ -184,7 +187,7 @@ ul.toc {
   .post-list-title {
     text-decoration: underline;
     text-decoration-color: gray;
-    opacity: 0.8;
+    opacity: 0.9;
   }
 
   .post-list-description {

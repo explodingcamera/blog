@@ -73,11 +73,16 @@ impl LinearAllocator {
 
 ## Global Allocator
 
-We'll also need to implement the `GlobalAlloc` trait, so Rust's `#[global_allocator]` compile time built-in knows how to use our allocator. This trait has two methods: `alloc` and `dealloc`. We'll only implement `alloc` for now, since we won't be able to free memory with our implementation.
+We'll also need to implement the `GlobalAlloc` trait, so Rust's `#[global_allocator]` compile time built-in knows how to use our allocator.
+
+This trait has two methods: `alloc` and `dealloc`. We'll only implement `alloc` for now, since we won't be able to free memory with our implementation.
 
 The trait also requires that we mark our implementation as `unsafe` since we are dealing with raw pointers and memory addresses.
 
+{{ file(name = "src/linear-allocator.rs") }}
+
 ```rust
+
 use core::alloc::{GlobalAlloc, Layout};
 use core::ptr::NonNull;
 use core::sync::atomic::{Ordering};
@@ -242,7 +247,6 @@ fn process_command(command: &str) {
         }
     };
 }
-
 ```
 
 Now, when we run our kernel, we'll be greeted with a prompt, and we can type in commands like `help` and `shutdown` to see the available commands and shutdown the machine.
@@ -262,18 +266,19 @@ Being able to shutdown the machine is great and all, but let's add some more fun
 {{ file(name = "src/main.rs") }}
 
 ```rust
-    match command {
-        // ...
-        "pagefault" => {
-            // read from an invalid address to trigger a page fault
-            unsafe { core::ptr::read_volatile(0xdeadbeef as *mut u64); }
-        }
-        "breakpoint" => {
-            // ebreak triggers a breakpoint exception, a trap that can be used for debugging with gdb or similar tools
-            unsafe { asm!("ebreak") };
-        }
-        // ...
+
+match command {
+    // ...
+    "pagefault" => {
+        // read from an invalid address to trigger a page fault
+        unsafe { core::ptr::read_volatile(0xdeadbeef as *mut u64); }
     }
+    "breakpoint" => {
+        // ebreak triggers a breakpoint exception, a trap that can be used for debugging with gdb or similar tools
+        unsafe { asm!("ebreak") };
+    }
+    // ...
+}
 ```
 
 When we now run the `pagefault` command, we'll see that - well - nothing happens. This is because we haven't set up a page table yet, and the kernel is still running in physical memory, something we want to change in the next chapter.
