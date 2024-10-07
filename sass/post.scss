@@ -147,6 +147,10 @@ ul.toc {
   }
 }
 
+.post-date {
+  font-variant: small-caps;
+}
+
 .post-list {
   margin: 0;
 
@@ -177,7 +181,6 @@ ul.toc {
     margin-left: 0.5rem;
     font-weight: 600;
     font-size: 1rem;
-    font-variant: small-caps;
   }
 
   a {

@@ -1,80 +1,75 @@
-{% import "macros/head.html" as head_macros -%}
-{% import "macros/menu.html" as menu_macros -%}
-{% import "macros/post.html" as post_macros -%}
+{% import "macros/head.html" as head_macros -%} {% import "macros/menu.html" as
+menu_macros -%} {% import "macros/post.html" as post_macros -%}
 
 <!DOCTYPE html>
-<html lang="{%- if config.default_language -%}{{ config.default_language }}{%- else -%}en{%- endif -%}">
-
-<head>
+<html
+  lang="{%- if config.default_language -%}{{ config.default_language }}{%- else -%}en{%- endif -%}"
+>
+  <head>
     <title>{%- block title %}{{ config.title }}{% endblock title -%}</title>
-    {{ head_macros::head(config=config) }}
+    {{ head_macros::head(config=config) }} {%- if config.generate_rss %} <link
+    rel="alternate" type="application/rss+xml" title="RSS" href="{{
+    get_url(path=" rss.xml") | safe }}"> {% endif -%} {%- if
+    config.extra.favicon %} <link rel="shortcut icon" type="{{
+    config.extra.favicon_mimetype | default(value=" image/x-icon") }}" href="{{
+    config.extra.favicon | safe }}"> {% endif -%} {%- block extra_head %} {%
+    endblock extra_head -%}
+  </head>
 
-    {%- if config.generate_rss %}
-    <link rel="alternate" type="application/rss+xml" title="RSS" href="{{ get_url(path=" rss.xml") | safe }}">
-    {% endif -%}
-
-    {%- if config.extra.favicon %}
-    <link rel="shortcut icon" type="{{ config.extra.favicon_mimetype | default(value=" image/x-icon") }}"
-        href="{{ config.extra.favicon | safe }}">
-    {% endif -%}
-
-    {%- block extra_head %}
-    {% endblock extra_head -%}
-</head>
-
-<body>
+  <body>
     {% block header %}
     <header class="header">
-        <ul>
-            <li class="active">
-                <a href="{{ config.base_url | safe }}">Blog</a>
-            </li>
-            <li>
-                <a href="https://henrygressmann.de">Website</a>
-            </li>
-        </ul> 
+      <ul>
+        <li class="active">
+          <a href="{{ config.base_url | safe }}">Henry's Blog</a>
+        </li>
+        <li>
+          <a href="https://henrygressmann.de">Website</a>
+        </li>
+      </ul>
     </header>
     {% endblock header %}
     <div class="container" data-spaify-main>
-
-
-        <div class="content">
-            {% block content %}
-            <div class="post">
-
-                {# <!-- blog description -->
-                Hello there! Welcome to my blog, a simple nook in the vast digital landscape where I share my
-                thoughts and experiences with programming, everything open source and operating systems. Enjoy your stay
-                and happy
-                coding!
-                <br />
-                <br /> #}
-
-                {% set section = get_section(path="_index.md") %}
-
-                {# <h2>Newest Posts</h2> #}
-                {{ post_macros::list_posts(pages=section.pages) }}
-            </div>
-            {% endblock content %}
+      <div class="content">
+        {% block content %}
+        <div class="post">
+          {#
+          <!-- blog description -->
+          Hello there! Welcome to my blog, a simple nook in the vast digital
+          landscape where I share my thoughts and experiences with programming,
+          everything open source and operating systems. Enjoy your stay and
+          happy coding!
+          <br />
+          <br />
+          #} {% set section = get_section(path="_index.md") %} {#
+          <h2>Newest Posts</h2>
+          #} {{ post_macros::list_posts(pages=section.pages) }}
         </div>
-
+        {% endblock content %}
+      </div>
     </div>
     {% block footer %}
     <footer class="footer">
-        <div class="footer__inner">
-            <div class="copyright copyright--user">
-                <a href="/tags">tags</a>
-                <a href="/series">series</a>
-                <a data-spaify-ignore href="/atom.xml">rss</a>
-                <a href="https://henrygressmann.de/impressum">impressum</a>
-                {# <a href="https://henrygressmann.de">henrygressmann.de</a> #}
-            </div>
+      <div class="footer__inner">
+        <div class="copyright copyright--user">
+          <a href="/tags">tags</a>
+          <a href="/series">series</a>
+          <a data-spaify-ignore href="/atom.xml">rss</a>
+          <a href="https://henrygressmann.de/impressum">impressum</a>
+          {# <a href="https://henrygressmann.de">henrygressmann.de</a> #}
         </div>
+      </div>
     </footer>
     {% endblock footer %}
 
-    <script type="module" src="{{ get_url(path='index.js', cachebust=true) | safe}}"></script>
-    <script type="module" data-entity="blog.henrygressmann.de" src="https://a.explodingcamera.com/script.js"></script>
-</body>
-
+    <script
+      type="module"
+      src="{{ get_url(path='index.js', cachebust=true) | safe}}"
+    ></script>
+    <script
+      type="module"
+      data-entity="blog.henrygressmann.de"
+      src="https://a.explodingcamera.com/script.js"
+    ></script>
+  </body>
 </html>

@@ -12,26 +12,26 @@ series = ["rust-os"]
 
 {% quote (class="info")%}
 
-This is a series of posts about my journey creating a kernel in rust. You can find the code for this project [here](https://github.com/explodingcamera/pogos/tree/part-2) and all of the posts in this series [here](/series/rust-os/).
+This is a series of posts about my journey creating a kernel in Rust. You can find the code for this project [here](https://github.com/explodingcamera/pogos/tree/part-2) and all of the posts in this series [here](/series/rust-os/).
 
 {% end %}
 
 Now that we have a basic kernel that can print to the screen, we can start building out some more functionality.
-The first thing I want to do is create a simple shell that will allow us to run some commands and more easily interact with our system.
+I first want to create a simple shell that will allow us to run some commands and more easily interact with our system.
 
-Like I mentioned in the previous post, we can't yet use heap allocated data structures, so we'll start with implementing a Global Allocator. This will allow us to use APIs like `Box` and `Vec` anywhere in our kernel which will make our lives much easier.
+As I mentioned in the previous post, we can't yet use heap-allocated data structures, so we'll start with implementing a Global Allocator. This will allow us to use APIs like `Box` and `Vec` anywhere in our kernel, making our lives much easier.
 
 <!-- {{toc}} -->
 
 # Memory Allocators
 
-To better understand what a global allocator is, we'll create a simple linear allocator that will allocate memory from a fixed size buffer. This allocator will only be able to allocate memory, not free it, but it will be enough to get us started.
+To better understand global allocators, we'll create a simple linear allocator to allocate memory from a fixed-size buffer. This allocator will only be able to allocate memory, not free it, but it will be enough to get us started.
 
-A linear allocator - sometimes also called a arena allocator - just keeps track of the current index of the buffer and allocates memory from there - just as simple as it can get. These allocators are very fast, but they are also very limited in their use cases. In the real world, they are often used in places where you need to allocate a lot of memory and then free it all at once, like in a game engine. They can also be used in places where you know you will only need a small amount of memory and you don't want to deal with the overhead of a more complex allocator like in embedded systems.
+A linear allocator - sometimes also called an arena allocator - just keeps track of the current index of the buffer and allocates memory from there - just as simple as it can get. These allocators are very fast but also very limited in their use cases. In the real world, they are often used where you need to allocate a lot of memory and then free it all at once, like in a game engine. They can also be used where you know you will only need a small amount of memory and want to avoid dealing with the overhead of a more complex allocator, like in embedded systems.
 
 {{ figure(caption = "Linear Allocators", position="center", src="./assets/linear-allocator.svg") }}
 
-First, we'll create a new file `src/linear-allocator.rs` and will create the basic data structure for our allocator:
+First, we'll create a new file, `src/linear-allocator.rs` and will create the basic data structure for our allocator:
 
 {{ file(name = "src/linear-allocator.rs") }}
 
@@ -75,9 +75,9 @@ impl LinearAllocator {
 
 We'll also need to implement the `GlobalAlloc` trait, so Rust's `#[global_allocator]` compile time built-in knows how to use our allocator.
 
-This trait has two methods: `alloc` and `dealloc`. We'll only implement `alloc` for now, since we won't be able to free memory with our implementation.
+This trait has two methods: `alloc` and `dealloc`. We'll only implement `alloc` for now since we won't be able to free memory with our implementation.
 
-The trait also requires that we mark our implementation as `unsafe` since we are dealing with raw pointers and memory addresses.
+The trait also requires marking our implementation as `unsafe` since we are dealing with raw pointers and memory addresses.
 
 {{ file(name = "src/linear-allocator.rs") }}
 
@@ -90,9 +90,9 @@ use core::sync::atomic::{Ordering};
 unsafe impl GlobalAlloc for LinearAllocator {
         unsafe fn alloc(&self, layout: Layout) -> *mut u8 {
         /* The byte multiple that our allocated memory must start at
-          most hardware architectures perform better when reading/writing
-          data at aligned addresses (e.g. 4 bytes, 8 bytes, etc.) so we
-          need to make sure that our memory is aligned properly
+           most hardware architectures perform better when reading/writing
+           data at aligned addresses (e.g. 4 bytes, 8 bytes, etc.) so we
+           need to make sure that our memory is aligned properly
         */
         let align = layout.align();
 
@@ -196,12 +196,12 @@ println!("{:?}", v);
 // [1, 2, 3]
 ```
 
-This is great, but we can't really do much with this allocator since we can't free memory. Alternative allocation strategies are, for example, [linked list allocators](https://os.phil-opp.com/allocator-designs/#linked-list-allocator), [binary buddy allocators](https://www.kernel.org/doc/gorman/html/understand/understand009.html), and [slab allocators](https://www.kernel.org/doc/gorman/html/understand/understand011.html). We won't be implementing any of these in here, but I encourage you to read about them and try to implement them yourself! Some of these are also available as crates on crates.io to use them as drop-in replacements for our naive implementation here ([linked_list_allocator](https://crates.io/crates/linked-list-allocator), [buddy_system_allocator](https://crates.io/crates/buddy_system_allocator) and [slabmalloc](https://crates.io/crates/slabmalloc)).
+This is great, but we can only do a little with this allocator since we can't free memory. Alternative allocation strategies are, for example, [linked list allocators](https://os.phil-opp.com/allocator-designs/#linked-list-allocator), [binary buddy allocators](https://www.kernel.org/doc/gorman/html/understand/understand009.html), and [slab allocators](https://www.kernel.org/doc/gorman/html/understand/understand011.html). We won't be implementing any of these in here, but I encourage you to read about them and try to implement them yourself! Some of these are also available as crates on crates.io to use them as drop-in replacements for our naive implementation here ([linked_list_allocator](https://crates.io/crates/linked-list-allocator), [buddy_system_allocator](https://crates.io/crates/buddy_system_allocator) and [slabmalloc](https://crates.io/crates/slabmalloc)).
 
 # Shell
 
-With most essential rust features available, we can now start building our shell. This shell will allow us to interact with our kernel and inspect its state.
-The shell will be a simple loop for now, that reads characters from SBIs `console_getchar` function, and executes some basic commands.
+With most of the essential rust features available, we can now start building our shell. This shell will allow us to interact with our kernel and inspect its state.
+The shell will be a simple loop that reads characters from SBIs `console_getchar function and executes some basic commands.
 
 {{ file(name = "src/main.rs") }}
 
@@ -249,7 +249,7 @@ fn process_command(command: &str) {
 }
 ```
 
-Now, when we run our kernel, we'll be greeted with a prompt, and we can type in commands like `help` and `shutdown` to see the available commands and shutdown the machine.
+Now, when we run our kernel, we'll be greeted with a prompt, and we can type in commands like `help` and `shutdown` to see the available commands and shut down the machine.
 
 ```
 > help
@@ -261,7 +261,7 @@ available commands:
 
 ## Debugging
 
-Being able to shutdown the machine is great and all, but let's add some more functionality. We'll start by adding commands to trigger different exceptions, so we can test our exception handler from the previous chapter.
+Being able to shut down the machine is great and all, but let's add some more functionality. We'll start by adding commands to trigger different exceptions so we can test our exception handler from the previous chapter.
 
 {{ file(name = "src/main.rs") }}
 
@@ -281,7 +281,7 @@ match command {
 }
 ```
 
-When we now run the `pagefault` command, we'll see that - well - nothing happens. This is because we haven't set up a page table yet, and the kernel is still running in physical memory, something we want to change in the next chapter.
+When we run the `pagefault` command, we'll see that nothing happens. This is because we still need to set up a page table, and the kernel is still running in physical memory, something we want to change in the next chapter.
 
 Our breakpoint command, however, will trigger a breakpoint exception, and we'll see the following output:
 
@@ -291,9 +291,9 @@ Trap frame: TrapFrame { ra: 2149605116, t0: 9, t1: 2149632682, t2: 22, t3: 5760,
 panicked at 'Exception cause: Exception(Breakpoint)', kernel/src/trap.rs:33:5
 ```
 
-This is great, we can now see the trap frame and the exception cause, so we can start debugging our kernel. To make use of this, you can also use an external debugger like [gdb](https://www.gnu.org/software/gdb/), which allows you to set breakpoints, inspect memory, step through code, and much more.
-Setting up gdb is a bit more involved, so if you run into issues check out this [guide](https://os.phil-opp.com/set-up-gdb/).
+We can now see the trap frame and the exception cause, so we can start debugging our kernel. You can also use an external debugger like [gdb](https://www.gnu.org/software/gdb/), which allows you to set breakpoints, inspect memory, step through code, and much more.
+Setting up gdb is a bit more involved, so if you run into issues, check out this [guide](https://os.phil-opp.com/set-up-gdb/).
 
-There's a lot of improvements we can make to this shell, for some ideas, check out my `simple_shell` crate on [crates.io](https://crates.io/crates/simple_shell). I recommend you try to implement some of these yourself, as it's a fun exercise. Something that might be helpful is this ANSI escape code [cheat sheet](https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797) for processing user input like arrow keys, backspace, etc.
+There are a lot of improvements we can make to this shell. For some ideas, check out my `simple_shell` crate on [crates.io](https://crates.io/crates/simple_shell). I recommend you try implementing some of these yourself, as it's a fun exercise. Something that might be helpful is this ANSI escape code [cheat sheet](https://gist.github.com/fnky/458719343aabd01cfb17a3a4f7296797) for processing user input like arrow keys, backspace, etc.
 
-After this fairly short chapter, we'll add multi-tasking to our kernel using async rust, so we can run multiple programs at the same time.
+After this relatively short chapter, we'll add multi-tasking to our kernel using async Rust so we can run multiple programs simultaneously.

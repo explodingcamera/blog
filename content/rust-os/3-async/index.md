@@ -2,7 +2,7 @@
 transparent = true
 title = "Operating Systems in Rust #3: Async"
 description = "In this post, we'll be adding an async runtime to our kernel"
-date = 2024-03-14
+date = 2024-10-08
 draft = true
 
 [taxonomies]
