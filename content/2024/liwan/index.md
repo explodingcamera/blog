@@ -4,23 +4,23 @@ description: "A look at my new project Liwan, a lightweight, privacy-focused web
 date: 2024-12-18
 ---
 
-> This post explores some of this project's background and technical aspects. If you're more so interested in the Liwan itself, you can check out the [demo instance](https://demo.liwan.dev/p/liwan.dev) and the docs on [liwan.dev](https://liwan.dev). The source code available on [GitHub](https://github.com/explodingcamera/liwan) under the AGPL-3.0 license.
+> This post explores some of this project's background and technical aspects. If you're more so interested in Liwan itself, you can check out the [demo instance](https://demo.liwan.dev/p/liwan.dev) and the docs on [liwan.dev](https://liwan.dev). The source code available on [GitHub](https://github.com/explodingcamera/liwan) under the AGPL-3.0 license.
 
-This summer, I started working on a small tool for collecting various metrics on my websites and this blog, partly because it helps me see what's popular and partly just as a feel-good vanity thing.
+This summer, I started working on a small tool for collecting various metrics on my websites and this blog to see what posts are popular and also just to have a better understanding of how people use my sites. It's grown into a very useful tool for me and I've recently released the first major version of it, so I thought I'd write a bit about it.
 
 {{ figure(caption = "The Liwan Dashboard for one of my websites.", position="center", src="./dashboard.jpg") }}
 
 Over the last ~5 years, I've tried out probably ten different analytics platforms after bailing on Google Analytics due to privacy concerns, but nothing ticked all the boxes for me:
 
-**I wanted strong privacy guarantees**. First of all, because it should be the default across all websites, but also because of how (rightfully) painful GDPR compliance can be when you collect too much data. I don't need to know your IP address or your browsing habits. There's no real reason for this data to leave my server; even when anonymized, there's always a risk of being misused.
+**I wanted strong privacy guarantees**. First of all, because it should be the default across all websites, but also because of how (rightfully) painful GDPR compliance can be when you collect too much data. I don't need to know your IP address or your browsing habits. There's no real reason for this data to leave my server; even when anonymized, there's always a risk of it being misused.
 
 **It should be set and forget**. I love that self-contained, statically linked binaries are making a comeback due to being the default with "newer" languages such as Go and Rust, which is fantastic for self-hosted software. Around the time I started working on this project, DuckDB 1.0 was also announced and later released, which seemed like a perfect tool for this. I value a simple setup process more than the ability to hyper-scale prematurely and endlessly customize everything.
 
-**Truly Open Source**: One of my favorite tools I tried was [fathom analytics](https://usefathom.com/), which sadly (and understandably) switched to a completely closed source, cloud model. I want to 'own' the data, even if the user's data is eventually anonymized; it's hard to trust what's happening on a server I don't control. I really like [plausible](https://plausible.io/)'s open core model; I just want something that is a bit more lightweight.
+**Truly Open Source**: One of my favorite tools I tried was [fathom analytics](https://usefathom.com/), which sadly (but understandably) switched to a completely closed source SaaS model. I want to 'own' the data, even if the user's data is eventually anonymized; it's hard to trust what's happening on a server I don't control. I really like [plausible](https://plausible.io/)'s open core model but I wanted something a bit more lightweight and opinionated.
 
-**Multi Website**: As I mentioned, I want to aggregate data from 10+ different sites, so multi-website support also had to be great. One platform I experimented with early on was (GoatCounter)[https://www.goatcounter.com/]. While the UI is bare bones, it's also very lightweight and available with an embedded database. Sadly, it does not offer multi-website support and is generally not as feature-rich as I would like.
+**Multi Website**: As I mentioned, I want to aggregate data from 10+ different sites, so multi-website support also had to be great. One platform I experimented with early on was (GoatCounter)[https://www.goatcounter.com/]. While the UI is bare bones, it's also very lightweight and available with an embedded database. Sadly, it does not offer great multi-website support and is generally not as feature-rich as I would like.
 
-Setting out with those and some more goals in mind, I started building [Liwan.dev](https://liwan.dev), which, as often happens, had a lot of feature creep but is now finally in a state where it could also be useful for a lot of small to medium sites.
+Setting out with those and some more goals in mind, I started building [Liwan.dev](https://liwan.dev), which, as often happens, had a lot of feature creep but now ended up in a place I'm very happy with.
 
 # Simple Software
 
@@ -30,11 +30,13 @@ You can overplay this - see the NPM ecosystem (this is honestly a bit of a straw
 
 Liwan is built on hundreds of open-source libraries; you can see the list for yourself on the [attributions page](https://demo.liwan.dev/attributions) shipped with every copy of Liwan. However, this doesn't mean it's not lightweight. Even when using the 'modern' web stack, resource-heavy and slow websites don't have to follow automatically. The dashboard is built using [Astro](https://astro.build/), a web framework built around reducing unnecessary overhead.
 
-A big part of the complexity of similar projects often comes from overly customizable Graph libraries. To reduce the amount of code that needs to be sent to the user, I build custom Graph and Map components directly on [d3](https://d3js.org/), keeping the entire JavaScript bundle shipped to users below 250kb. This even includes a large number of different icons and the data for the world map, which uses an optimized [topojson](https://github.com/topojson/topojson) file I created with data from the [natural earth project](https://www.naturalearthdata.com/).
+A big part of the complexity of similar projects often comes from overly customizable Graph libraries. To reduce the amount of code that needs to be sent to the user, I build custom Graph and Map components directly on [d3](https://d3js.org/), keeping the entire JavaScript bundle shipped to users below 250kb. This even includes a large number of different icons and the data for the world map, which uses an heavily optimized [topojson](https://github.com/topojson/topojson) file I created with data from the [natural earth project](https://www.naturalearthdata.com/).
 
 {{ figure(caption = "Liwan's PageSpeed Insights.", position="center", src="./pagespeed.jpg") }}
 
-On the backend side, the main contributors to the amount of code are Rustls and the embedded databases, DuckDB for events, and SQLite for the user data and authentication. The dashboard is transformed into static HTML, CSS, and JS and bundled with the rest of the code, something I've recently started doing with some of my other projects as well. Producing a single, universal artifact simplifies the entire build process and packaging containers greatly (Something that could be pushed even further using [Actually Portable Executable](https://justine.lol/ape.html)). To maximize compatibility across different Linux distro (you might have had issues with glibc on alpine containers before if you've worked with docker imaged), Liwan is also statically linked with [musl libc](https://musl.libc.org/) and uses [rustls](https://github.com/rustls/rustls) instead of linking against OpenSSL.
+On the backend side, the main contributors to the amount of code are the embedded databases, DuckDB for events, and SQLite for the user data and authentication. The dashboard is transformed into static HTML, CSS, and JS and bundled with the rest of the code, something I've recently started doing with some of my other projects as well. Producing a single, universal artifact simplifies the entire build process and packaging containers greatly (Something that could be pushed even further using [Actually Portable Executable](https://justine.lol/ape.html)), but I also decided to package it up as a Docker container as well in case you prefer that. This container just contains the Liwan binary and nothing else thanks to the static linking.
+
+To maximize compatibility across different Linux distro (you might have had issues with glibc on alpine containers before if you've worked with docker imaged), Liwan is also statically linked with [musl libc](https://musl.libc.org/) and uses [rustls](https://github.com/rustls/rustls) instead of linking against OpenSSL.
 
 Simple software doesn't stop here, however. Liwan is also built to require only a minimal amount of configuration and settings from the user before it is ready to process events. You execute the binary, and Liwan is ready. Everything will be placed in the correct place according to XDG Base Directory Specification, and you can start sending events to it right away.
 
@@ -48,9 +50,9 @@ The main alternative I considered was the EUPL. I've only seen it used on very f
 
 # Try it out!
 
-Liwan is not perfect. There are many things I could optimize more, starting with huge datasets - analyzing millions of events takes a lot of resources - but it fits my personal use case (nearly) perfectly and probably yours, too.
+Liwan is not perfect. There are many things I could optimize more, starting supporting huge datasets - going into the tens of millions of events can slow down things considerably - but it fits my personal use case (nearly) perfectly and probably a lot of others too.
 
-Just grab the latest binary to try it out:
+Just grab the latest version and try it out for yourself:
 
 ```bash
 # Download the latest release
