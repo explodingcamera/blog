@@ -18,7 +18,7 @@ Over the last ~5 years, I've tried out probably ten different analytics platform
 
 **Truly Open Source**: One of my favorite tools I tried was [fathom analytics](https://usefathom.com/), which sadly (but understandably) switched to a completely closed source SaaS model. I want to 'own' the data, even if the user's data is eventually anonymized; it's hard to trust what's happening on a server I don't control. I really like [plausible](https://plausible.io/)'s open core model but I wanted something a bit more lightweight and opinionated.
 
-**Multi Website**: As I mentioned, I want to aggregate data from 10+ different sites, so multi-website support also had to be great. One platform I experimented with early on was (GoatCounter)[https://www.goatcounter.com/]. While the UI is bare bones, it's also very lightweight and available with an embedded database. Sadly, it does not offer great multi-website support and is generally not as feature-rich as I would like.
+**Multi Website**: As I mentioned, I want to aggregate data from 10+ different sites, so multi-website support also had to be great. One platform I experimented with early on was [GoatCounter](https://www.goatcounter.com/). While the UI is bare bones, it's also very lightweight and available with an embedded database. Sadly, it does not offer great multi-website support and is generally not as feature-rich as I would like.
 
 Setting out with those and some more goals in mind, I started building [Liwan.dev](https://liwan.dev), which, as often happens, had a lot of feature creep but now ended up in a place I'm very happy with.
 

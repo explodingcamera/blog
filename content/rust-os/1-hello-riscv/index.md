@@ -114,7 +114,7 @@ REGION_ALIAS("REGION_HEAP", RAM);
 REGION_ALIAS("REGION_STACK", RAM);
 ```
 
-Wiith this file in place, we need to tell the linker where to find it. We can do this by adding a `build.rs` file to our project:
+With this file in place, we need to tell the linker where to find it. We can do this by adding a `build.rs` file to our project:
 
 {{ file(name = "build.rs")}}
 
