@@ -13,7 +13,7 @@ tags = ["koi", "image"]
 This post has been updated to reflect changes in the koi file format. The original post can be found [here](https://github.com/explodingcamera/blog/blob/8a3c81d81a251b4ac64714c4e5f60a2c07376551/content/koi.md).
 {% end %}
 
-I've been working on a new image format called [koi](https://github.com/explodingcamera/koi) - **the kinda okay image format**  
+I've been working on a new image format called [koi](https://github.com/explodingcamera/koi-rs) - **the kinda okay image format**  
 and I wanted to share some details.
 
 It's a lossless image format based on ideas from [qoi](https://phoboslab.org/log/2021/11/qoi-fast-lossless-image-compression) and [qoir](https://nigeltao.github.io/blog/2022/qoir.html) that is designed to use a small amount of memory and be fast to decode. I have exactly zero experience with image formats, so this is a learning experience for me. As it currently stands, it outperforms many other image formats in terms of compression ratio and decoding speed on images with a lot of flat colors, but more on that later.

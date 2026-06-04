@@ -1,0 +1,16 @@
+base_url="https://blog.henrygressmann.de"
+title="henry's blog"
+description="a blog about software development, technology and other things"
+build_search_index=true
+generate_feeds=true
+compile_sass=true
+taxonomies=[{name="tags"}, {name="series", feed=true}]
+
+[markdown.highlighting]
+theme="dracula"
+
+[extra]
+accent_color="blue"
+background_color="green"
+enable_post_view_navigation=true
+post_view_navigation_prompt="Thanks for reading! Read other posts?"
