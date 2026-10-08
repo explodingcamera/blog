@@ -27,7 +27,7 @@ jobs:
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Build
-        uses: shalzz/zola-deploy-action@06dffc1b49e4f61b31dcf3a6c824194a78216632 # v0.23.1
+        uses: shalzz/zola-deploy-action@67789514e71b810b2d6a1ec9c19a7f76fc51d670 # Zola v0.23.6
         env:
           BUILD_ONLY: true
 
