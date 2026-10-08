@@ -1,18 +1,20 @@
+{% component figuresvg(src = "", caption = "", position = "", link = "", invert = false, mixblend = false, caption_position = "", caption_style = "") %}
+{% set markup %}
 {% if src %}
-  <figure class="{% if position %}{{ position }}{% else -%} center {%- endif %}{% if invert %} invert {% endif -%}{% if mixblend %} mixblend {% endif -%}" >
+<figure class="{% if position %}{{ position }}{% else -%} center {%- endif %}{% if invert %} invert {% endif -%}{% if mixblend %} mixblend {% endif -%}" >
     {% if link %}
-    <a href="{{ link | safe }}" target="_blank">
+<a href="{{ link | safe }}" target="_blank">
     {% endif %}
-    
     {% set data = load_data(path=src, format="plain") %}
-    {{ data | safe }}
-    
+{{ data | replace(from="\n", to="") | safe }}
     {% if link %}
-    </a>
+</a>
     {% endif %}
-
     {% if caption %}
-      <figcaption class="{% if caption_position %}{{ caption_position }}{% else -%} center {%- endif %}"{% if caption_style %} style="{{ caption_style | safe }}"{% endif %}>{{ caption }}</figcaption>
+<figcaption class="{% if caption_position %}{{ caption_position }}{% else -%} center {%- endif %}"{% if caption_style %} style="{{ caption_style | safe }}"{% endif %}>{{ caption }}</figcaption>
     {% endif %}
-  </figure>
+</figure>
 {% endif %}
+{% endset %}
+{{ markup | replace(from="\n", to="") | safe }}
+{% endcomponent figuresvg %}

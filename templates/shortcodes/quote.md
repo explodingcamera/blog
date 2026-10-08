@@ -1,3 +1,4 @@
+{% component quote(class = "", author = "", url = "", url_text = "") %}
 <blockquote class="{% if class %}{{class}}{% endif %}">
   <p>
     {{ body | markdown(inline=true) }}
@@ -12,3 +13,4 @@
 {% endif %}
 
 </blockquote>
+{% endcomponent quote %}

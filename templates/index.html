@@ -1,13 +1,10 @@
-{% import "macros/head.html" as head_macros -%} {% import "macros/menu.html" as
-menu_macros -%} {% import "macros/post.html" as post_macros -%}
-
 <!DOCTYPE html>
 <html
   lang="{%- if config.default_language -%}{{ config.default_language }}{%- else -%}en{%- endif -%}"
 >
   <head>
     <title>{%- block title %}{{ config.title }}{% endblock title -%}</title>
-    {{ head_macros::head(config=config) }} {%- if config.generate_rss %} <link
+    {{<head config={config} />}} {%- if config.generate_rss %} <link
     rel="alternate" type="application/rss+xml" title="RSS" href="{{
     get_url(path=" rss.xml") | safe }}"> {% endif -%} {%- if
     config.extra.favicon %} <link rel="shortcut icon" type="{{
@@ -43,7 +40,7 @@ menu_macros -%} {% import "macros/post.html" as post_macros -%}
           <br />
           #} {% set section = get_section(path="_index.md") %} {#
           <h2>Newest Posts</h2>
-          #} {{ post_macros::list_posts(pages=section.pages) }}
+          #} {{<post.list_posts pages={section.pages} />}}
         </div>
         {% endblock content %}
       </div>

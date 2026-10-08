@@ -1,11 +1,11 @@
-{% macro menu(config, current_path) %}
+{% component menu(config, current_path, @current_url) %}
     {%- if config.extra.menu_items %}
         {%- set menu_items = config.extra.menu_items -%}
 
             {%- for item in menu_items %}
                 {%- set abs_item_url = item.url | replace(from="$BASE_URL", to=config.base_url) -%}
                 {%- set is_current = current_url == abs_item_url ~ "/"
-                                     or current_url is starting_with(abs_item_url)
+                                     or current_url is starting_with(pat=abs_item_url)
                 -%}
                 {%- set is_base = abs_item_url == config.base_url
                                   or abs_item_url == config.base_url ~ "/"
@@ -25,11 +25,11 @@
                 {%- set current_item = base_item -%}
             {% endif -%}
 
-            {{ menu_macros::menu_for(config=config, current_item=current_item) }}
+            {{<menu.for config={config} current_item={current_item} />}}
     {% endif -%}
-{% endmacro menu %}
+{% endcomponent menu %}
 
-{% macro menu_for(config, current_item) %}
+{% component menu.for(config, current_item) %}
     {%- if config.extra.menu_items %}
         {%- set menu_items = config.extra.menu_items -%}
 
@@ -47,5 +47,4 @@
             </ul>
         </nav>
     {% endif -%}
-{% endmacro menu %}
-
+{% endcomponent menu.for %}

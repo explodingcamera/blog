@@ -1,4 +1,4 @@
-{% macro content(page, summary) %}
+{% component post.content(page, summary) %}
 {%- if summary and page.summary %}
 <div class="post-content">
     {{ page.content | safe }}
@@ -12,12 +12,13 @@
 </div>
 {% else %}
 <div class="post-content">
-    {{ page.content | safe | replace(from="{{toc}}", to=post_macros::toc(page=page)) | safe }}
+    {% set toc %}{{<post.toc page={page} />}}{% endset %}
+    {{ page.content | safe | replace(from="<!-- post-toc -->", to=toc) | safe }}
 </div>
 {%- endif %}
-{% endmacro content %}
+{% endcomponent post.content %}
 
-{% macro toc(page) %}
+{% component post.toc(page) %}
 {%- if page.toc %}
 <details class="toc" open>
     <summary class="toc__title">Table of Contents</summary>
@@ -39,27 +40,27 @@
     </ul>
 </details>
 {% endif %}
-{% endmacro toc %}
+{% endcomponent post.toc %}
 
-{% macro date(page) %}
+{% component post.date(page) %}
 <span class="post-date">
     {%- if page.date %}
     {{ page.date | date(format="%h %d, %Y") }}
     {% endif -%}
 </span>
-{% endmacro post_date %}
+{% endcomponent post.date %}
 
-{% macro updated(page) %}
+{% component post.updated(page) %}
 <span class="post-updated">
     {%- if page.updated %}
     last updated on
     {{ page.updated | date(format="%h %d, %Y") }}
     {% endif -%}
 </span>
-{% endmacro updated %}
+{% endcomponent post.updated %}
 
 
-{% macro earlier_later(page) %}
+{% component post.earlier_later(page, @config) %}
 {%- if config.extra.enable_post_view_navigation and page.earlier or page.later %}
 <div class="pagination">
     <div class="pagination__title">
@@ -86,22 +87,22 @@
     </div>
 </div>
 {% endif -%}
-{% endmacro earlier_later %}
+{% endcomponent post.earlier_later %}
 
 
-{% macro header(page) %}
+{% component post.header(page) %}
 <h1 class="post-title"><a href="{{ page.permalink | safe }}">{{ page.title }}</a></h1>
 <div class="post-meta-inline">
-    {{ post_macros::date(page=page) }}
+    {{<post.date page={page} />}}
 </div>
-{{ post_macros::tags(page=page) }}
+{{<post.tags page={page} />}}
 <div class="post-meta-small">
-    {{ post_macros::updated(page=page) }}
+    {{<post.updated page={page} />}}
 </div>
-{% endmacro header %}
+{% endcomponent post.header %}
 
 
-{% macro list_posts(pages) %}
+{% component post.list_posts(pages) %}
 <ul class="post-list">
     {% set year = "-1" %}
     {%- for page in pages %}
@@ -133,10 +134,10 @@
     </li>
     {% endfor -%}
 </ul>
-{% endmacro list_posts %}
+{% endcomponent post.list_posts %}
 
 
-{% macro tags(page, short=false) %}
+{% component post.tags(page, short=false) %}
 {%- if page.taxonomies and page.taxonomies.tags %}
 <span class="post-tags-inline">
     {%- for tag in page.taxonomies.tags %}
@@ -145,4 +146,4 @@
     {% endfor -%}
 </span>
 {% endif -%}
-{% endmacro tags %}
+{% endcomponent post.tags %}

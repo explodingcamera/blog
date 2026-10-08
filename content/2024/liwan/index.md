@@ -4,11 +4,11 @@ description: "A look at my new project Liwan, a lightweight, privacy-focused web
 date: 2024-12-18
 ---
 
-> This post explores some of this project's background and technical aspects. If you're more so interested in Liwan itself, you can check out the [demo instance](https://demo.liwan.dev/p/liwan.dev) and the docs on [liwan.dev](https://liwan.dev). The source code available on [GitHub](https://github.com/explodingcamera/liwan) under the AGPL-3.0 license.
+> This post explores some of this project's background and technical aspects. If you're more so interested in Liwan itself, you can check out the [demo instance](https://demo.liwan.dev/p/liwan.dev) and the docs on [liwan.dev](https://liwan.dev). The source code is available on [GitHub](https://github.com/explodingcamera/liwan) under the Apache-2.0 license.
 
 This summer, I started working on a small tool for collecting various metrics on my websites and this blog to see what posts are popular and also just to have a better understanding of how people use my sites. It's grown into a very useful tool for me and I've recently released the first major version of it, so I thought I'd write a bit about it.
 
-{{ figure(caption = "The Liwan Dashboard for one of my websites.", position="center", src="./dashboard.jpg") }}
+{{<figure caption="The Liwan Dashboard for one of my websites." position="center" src="./dashboard.jpg" />}}
 
 Over the last ~5 years, I've tried out probably ten different analytics platforms after bailing on Google Analytics due to privacy concerns, but nothing ticked all the boxes for me:
 
@@ -32,7 +32,7 @@ Liwan is built on hundreds of open-source libraries; you can see the list for yo
 
 A big part of the complexity of similar projects often comes from overly customizable Graph libraries. To reduce the amount of code that needs to be sent to the user, I build custom Graph and Map components directly on [d3](https://d3js.org/), keeping the entire JavaScript bundle shipped to users below 250kb. This even includes a large number of different icons and the data for the world map, which uses an heavily optimized [topojson](https://github.com/topojson/topojson) file I created with data from the [natural earth project](https://www.naturalearthdata.com/).
 
-{{ figure(caption = "Liwan's PageSpeed Insights.", position="center", src="./pagespeed.jpg") }}
+{{<figure caption="Liwan's PageSpeed Insights." position="center" src="./pagespeed.jpg" />}}
 
 On the backend side, the main contributors to the amount of code are the embedded databases, DuckDB for events, and SQLite for the user data and authentication. The dashboard is transformed into static HTML, CSS, and JS and bundled with the rest of the code, something I've recently started doing with some of my other projects as well. Producing a single, universal artifact simplifies the entire build process and packaging containers greatly (Something that could be pushed even further using [Actually Portable Executable](https://justine.lol/ape.html)), but I also decided to package it up as a Docker container as well in case you prefer that. This container just contains the Liwan binary and nothing else thanks to the static linking.
 
@@ -43,6 +43,8 @@ Simple software doesn't stop here, however. Liwan is also built to require only 
 Early on, I also decided to add an onboarding page for users to create their initial user account. This page can only be accessed from a URL printed to the console on the first startup, protecting you from accidentally exposing this screen to the public internet and removing the need for default passwords.
 
 # Open Source
+
+> **Licensing update:** Liwan is now licensed under Apache-2.0. The discussion below reflects my thinking when I originally published this post and chose AGPL-3.0.
 
 As a small side note on the open-source part, I've thought a lot about how I wanted to license this project. I ended up going with the AGPL-3.0, which I'm not 100% happy with but is the best compromise for now. My one big gripe with the AGPL-3.0 is the mostly undefined virality boundaries, which probably apply less in the EU (to remedy this a bit, the tracker script is also available under the MIT license). In other projects, I usually use the MIT + Apache 2.0 dual license that is so common in the Rust ecosystem. Still, I want flexibility to allow me to monetize Liwan more easily in the future. To have the possibility to relicense it later and not need to set up a CLA, all contributions also need to be provided under the MIT license as well, something I haven't seen in many other projects and seems like a good compromise for both sides.
 

@@ -10,18 +10,18 @@ tags = ["rust", "riscv", "kernel"]
 series = ["rust-os"]
 +++
 
-{% quote (class="info")%}
+{% <quote class="info"> %}
 
 This is a series of posts about my journey creating a kernel in Rust. You can find the code for this project [here](https://github.com/explodingcamera/pogos/tree/part-2) and all of the posts in this series [here](/series/rust-os/).
 
-{% end %}
+{% </quote> %}
 
 Now that we have a basic kernel that can print to the screen, we can start building out some more functionality.
 I first want to create a simple shell that will allow us to run some commands and more easily interact with our system.
 
 As I mentioned in the previous post, we can't yet use heap-allocated data structures, so we'll start with implementing a Global Allocator. This will allow us to use APIs like `Box` and `Vec` anywhere in our kernel, making our lives much easier.
 
-<!-- {{toc}} -->
+<!-- Table of contents disabled -->
 
 # Memory Allocators
 
@@ -29,11 +29,11 @@ To better understand global allocators, we'll create a simple linear allocator t
 
 A linear allocator - sometimes also called an arena allocator - just keeps track of the current index of the buffer and allocates memory from there - just as simple as it can get. These allocators are very fast but also very limited in their use cases. In the real world, they are often used where you need to allocate a lot of memory and then free it all at once, like in a game engine. They can also be used where you know you will only need a small amount of memory and want to avoid dealing with the overhead of a more complex allocator, like in embedded systems.
 
-{{ figure(caption = "Linear Allocators", position="center", src="./assets/linear-allocator.svg") }}
+{{<figure caption="Linear Allocators" position="center" src="./assets/linear-allocator.svg" />}}
 
 First, we'll create a new file, `src/linear-allocator.rs` and will create the basic data structure for our allocator:
 
-{{ file(name = "src/linear-allocator.rs") }}
+{{<file name="src/linear-allocator.rs" />}}
 
 ```rust
 
@@ -79,7 +79,7 @@ This trait has two methods: `alloc` and `dealloc`. We'll only implement `alloc` 
 
 The trait also requires marking our implementation as `unsafe` since we are dealing with raw pointers and memory addresses.
 
-{{ file(name = "src/linear-allocator.rs") }}
+{{<file name="src/linear-allocator.rs" />}}
 
 ```rust
 
@@ -127,7 +127,7 @@ unsafe impl GlobalAlloc for LinearAllocator {
 
 Before we can start using our allocator, we need to give it a region of memory use. We'll do this in our `src/heap.rs` file:
 
-{{ file(name = "src/heap.rs") }}
+{{<file name="src/heap.rs" />}}
 
 ```rust
 
@@ -145,7 +145,7 @@ pub unsafe fn init_kernel_heap() {
 }
 ```
 
-{{ file(name = "src/main.rs") }}
+{{<file name="src/main.rs" />}}
 
 ```rust
 
@@ -181,7 +181,7 @@ fn main(a0: usize) -> ! {
 
 Now, we can use our allocator to allocate some memory! Let's create a `Vec` and push some values to it to make sure everything works as expected:
 
-{{ file(name = "src/main.rs") }}
+{{<file name="src/main.rs" />}}
 
 ```rust
 
@@ -203,7 +203,7 @@ This is great, but we can only do a little with this allocator since we can't fr
 With most of the essential rust features available, we can now start building our shell. This shell will allow us to interact with our kernel and inspect its state.
 The shell will be a simple loop that reads characters from SBIs `console_getchar function and executes some basic commands.
 
-{{ file(name = "src/main.rs") }}
+{{<file name="src/main.rs" />}}
 
 ```rust
 
@@ -263,7 +263,7 @@ available commands:
 
 Being able to shut down the machine is great and all, but let's add some more functionality. We'll start by adding commands to trigger different exceptions so we can test our exception handler from the previous chapter.
 
-{{ file(name = "src/main.rs") }}
+{{<file name="src/main.rs" />}}
 
 ```rust
 

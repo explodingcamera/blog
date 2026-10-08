@@ -10,7 +10,7 @@ I finally finished writing my bachelor's thesis on WebAssembly and Edge Computin
 but for now, I wanted to talk about another project I worked on earlier this year that inspired much of the work I did
 for my thesis: [TinyWasm](https://github.com/explodingcamera/tinywasm), a fully compliant WebAssembly runtime written in Rust.
 
-## <u>**TinyWasm**</u>
+## **TinyWasm**
 
 When writing my posts on [OS Development](https://blog.henrygressmann.de/series/rust-os/) last year, I got interested in WebAssembly
 and wanted to try it out inside the kernel. I was fed up with writing context-switching and memory management code,
@@ -36,7 +36,7 @@ I decided to set out some constraints at the start to finish it on time:
 I started by taking a simple "Hello World" WebAssembly program and tried to infer everything I needed without looking at the specification.
 Surprisingly, this worked well, and in a short time, I had a simple interpreter that could run very basic programs.
 
-{{ figure(caption = "The first test version of the interpreter.", position="center", src="./assets/code.jpg", link="https://github.com/explodingcamera/tinywasm/blob/93f8e10a8c15cbcf0d09517869016c32c6bd47eb/crates/tinywasm/src/module/mod.rs#L131-L185") }}
+{{<figure caption="The first test version of the interpreter." position="center" src="./assets/code.jpg" link="https://github.com/explodingcamera/tinywasm/blob/93f8e10a8c15cbcf0d09517869016c32c6bd47eb/crates/tinywasm/src/module/mod.rs#L131-L185" />}}
 
 With this newly gained confidence, I scrapped the initial codebase and started from scratch.
 Starting by defining the structure of the interpreter and the different components it would need, I quickly realized that
@@ -46,7 +46,7 @@ Thankfully, I didn't have to write all of these tests myself, as the reference i
 of a pain, but in the end, I had a script that would run all of the relevant tests and give me a nice graph of
 how many tests I had passed (and some dopamine when the number went up).
 
-{{ figuresvg(caption = "", position="center", src="content/2024/tinywasm/assets/progress-mvp.svg") }}
+{{<figuresvg caption="" position="center" src="content/2024/tinywasm/assets/progress-mvp.svg" />}}
 
 Now that I had a good test suite, I started implementing the interpreter. The WebAssembly specification is thorough,
 but it's also dense with abstract concepts and mathematical notation.
@@ -61,14 +61,14 @@ a couple of long nights ahead of me. Finally, once all the tests passed, I compi
 and ran it using TinyWasm. It worked on the first try. I was completely surprised, but LLVM randomly did the right optimizations that made it work,
 and its code didn't trigger any of the remaining edge cases/bugs.
 
-## <u>**Optimization**</u>
+## **Optimization**
 
 Once I had a (mostly) working interpreter, I started looking into profiling and optimizing the code. I had a few ideas on how to make it faster,
 but I wanted to optimize only the parts that were slow and not add any additional complexity to the codebase.
 I started by profiling the interpreter using `perf`, `cargo-flamegraph` and later `samply` to understand where the bottlenecks were. To keep things going in the right direction,
 I also added some basic benchmarks using `criterion` to ensure I didn't accidentally make things slower.
 
-{{ figure(caption = "A flamegraph using Firefox's profiler & samply", src="./assets/flamegraph.jpg") }}
+{{<figure caption="A flamegraph using Firefox's profiler & samply" src="./assets/flamegraph.jpg" />}}
 
 Initially, the biggest overhead was matching opcodes in the interpreter loop. Without using unsafe code,
 I had to nudge the compiler in the right direction to generate jump tables for the opcodes. Thankfully, a couple of
@@ -87,19 +87,19 @@ as close to the original WebAssembly model as possible.
 
 For actual performance, I'm currently at about 1/3 of the speed of wasmi, which is pretty good considering the size of the codebase. These benchmarks are not available online yet as this was part of my thesis, but whenever I get around to cleaning them up, I'll publish them on GitHub as well.
 
-## <u>**Conclusion**</u>
+## **Conclusion**
 
 I was super happy with the results, and I'm still pushing the odd update here and there. The next step is SIMD support (currently in the works), for which I recently refactored the stack to use a more efficient representation (SoA for differently sized types). After that, I'll look into adding threads and moving to support the WebAssembly System Interface (WASI). However, I'm waiting for the spec to stabilize before I start implementing it.
 
 As of now, TinyWasm supports WebAssembly V2 (without SIMD and threads) and several other proposals, such as reference types and bulk memory operations, so most programs should work fine. After submitting it as my capstone project, I also posted it on HN and Reddit, where I got some nice feedback and a few stars on GitHub (obviously the most important part).
 
-{{ figure(caption = "Internet points are important.", position="center", src="./assets/hn.jpg", link="https://news.ycombinator.com/item?id=39627410") }}
+{{<figure caption="Internet points are important." position="center" src="./assets/hn.jpg" link="https://news.ycombinator.com/item?id=39627410" />}}
 
 If you're interested in checking it out or maybe even contributing, TinyWasm is up
 on [GitHub](https://github.com/explodingcamera/tinywasm) and also on [crates.io](https://crates.io/crates/tinywasm).
 Feel free to poke around, open issues, or even submit a PR (I recently improved the test suite and added a small contribution guide).
 
-## <u>**Further Reading**</u>
+## **Further Reading**
 
 [Crafting Interpreters](https://craftinginterpreters.com/) by Robert Nystrom is probably the best introduction to the field.
 Going from there, I can also recommend the [Writing an Interpreter in Go](https://interpreterbook.com/)/[Writing a Compiler in Go](https://compilerbook.com/)

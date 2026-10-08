@@ -3,8 +3,8 @@
 {% block content %}
 
 <div class="post">
-    {{ post_macros::header(page=page) }}
-    {{ post_macros::content(page=page, summary=false) }}
-    {{ post_macros::earlier_later(page=page) }}
+    {{<post.header page={page} />}}
+    {{<post.content page={page} summary={false} />}}
+    {{<post.earlier_later page={page} />}}
 </div>
 {% endblock content %}

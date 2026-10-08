@@ -9,9 +9,9 @@ aliases = ["koi"]
 tags = ["koi", "image"]
 +++
 
-{% quote (class="info")%}
+{% <quote class="info"> %}
 This post has been updated to reflect changes in the koi file format. The original post can be found [here](https://github.com/explodingcamera/blog/blob/8a3c81d81a251b4ac64714c4e5f60a2c07376551/content/koi.md).
-{% end %}
+{% </quote> %}
 
 I've been working on a new image format called [koi](https://github.com/explodingcamera/koi-rs) - **the kinda okay image format**  
 and I wanted to share some details.
